@@ -51,11 +51,11 @@ async function getPokemonOverview() {
     }
 }
 
-function emptyContainer(){
-    document.getElementById("pokedex").innerHTML="";
+function emptyContainer() {
+    document.getElementById("pokedex").innerHTML = "";
 }
 
-function unsetCurrentPokemon(){
+function unsetCurrentPokemon() {
     currentPokemon = null;
 }
 
@@ -69,15 +69,15 @@ async function loadSimplePokemon(index) {
         let pokemonData = await response.json();
         console.log(pokemonData);
 
-        renderSimplePokemonLayout(index);
-        renderSimplePokemonValues(index, pokemonData);
-    } catch(e) {
+        renderPokemonLayout(index,"extended");
+        renderHeaderPokemonValues(index, pokemonData);
+    } catch (e) {
         console.error(e);
     }
 
 }
 
-function renderSimplePokemonValues(index, pokemonData) {
+function renderHeaderPokemonValues(index, pokemonData) {
     let defaultImg = pokemonData["sprites"]["front_default"];
     document.getElementById("pokemonImg" + index).src = defaultImg;
 
@@ -88,28 +88,41 @@ function renderSimplePokemonValues(index, pokemonData) {
     document.getElementById("pokemonTypes" + index).innerHTML = "";
 
     for (let i = 0; i < types.length; i++) {
-        document.getElementById("pokemonTypes" + index).innerHTML += types[i]['type']['name'];
+        document.getElementById("pokemonTypes" + index).innerHTML += `<div class='pokemon-type ${types[i]['type']['name']}'>`+types[i]['type']['name']+`</div>`;
     }
 }
 
-function renderSimplePokemonLayout(index) {
-    html = `
-    <div id="pokemon${index}" class="pokemon">
-        <div class='pokemon-header'>
-            <div class='pokemon-header-menue'>
-                <img class='icon invert' src='./icons/arrow-back.png' onclick="unsetCurrentPokemon();init();">
-                <img class='icon invert' src='./icons/heart.png' onclick="unsetCurrentPokemon();init();">
-            </div>
-            <h2 id="pokemonName${index}" class="pokemon-name"></h2>
-            <table class="pokemon-stats">
-                <tr id="pokemonTypes${index}">                
-                </tr>
-            </table>
-            <img id="pokemonImg${index}" class="pokemon-img">
-        </div>
-        
-    </div>
-`;
 
+function renderPokemonLayout(index,type) {
+    html=`<div id="pokemon${index}" class="pokemon-container">`
+    if(type=='simple'){
+        html+=getPokemonHeaderLayout(index)+`</div>`;
+    }else{
+        html+=getPokemonHeaderLayout(index)+getPokemonBodyLayout(index);
+    }
+
+    html+=`</div>`;
+    
     document.getElementById("pokedex").innerHTML += html;
 }
+
+function getPokemonBodyLayout(index) {
+    html = `<div class='pokemon-info-container'></div>`;
+    return html;
+}
+
+function getPokemonHeaderLayout(index) {
+    html = `
+    <div class='pokemon-header'>
+        <div class='pokemon-header-menue'>
+            <img class='icon invert' src='./icons/arrow-back.png' onclick="unsetCurrentPokemon();init();">
+            <img class='icon invert' src='./icons/heart.png' onclick="unsetCurrentPokemon();init();">
+        </div>
+        <h2 id="pokemonName${index}" class="pokemon-name"></h2>
+        <div id="pokemonTypes${index}" class="pokemon-types">
+        </div>
+        <img id="pokemonImg${index}" class="pokemon-img">
+    </div>`
+    return html;
+}
+
