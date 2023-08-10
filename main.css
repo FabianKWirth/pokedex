@@ -8,16 +8,20 @@ body {
     height: fit-content;
 }
 
-.pokemon-img {
-    object-fit: cover;
-    
+.pokemon-img-default {
+    object-fit: cover;    
 }
+.pokemon-img-200{
+    object-fit: cover;  
+    width:200px;
+}
+
+
 
 .icon {
     object-fit: cover;
     height: 16px;
 }
-
 
 
 .invert {

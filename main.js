@@ -1,17 +1,14 @@
-let currentPokemon = null;
+let selectedPokemon = 17;
 let pokemonAmount=25;
 
 
 async function init() {
-    if (currentPokemon == null) {
+    if (selectedPokemon == null) {
         await renderPokemonGrid();
     } else {
-        await renderCurrentPokemon();
+        await renderPokemonGrid();
+        await renderSelectedPokemon();
     }
-}
-
-async function renderCurrentPokemon() {
-
 }
 
 
@@ -25,19 +22,35 @@ async function renderPokemonGrid() {
 }
 
 
+async function renderSelectedPokemon() {
+    renderSelectedPokemonLayout();
+    await loadPokemonGridValues(selectedPokemon);
+}
+
+function renderSelectedPokemonLayout(){
+    html=`
+    <div class="w-25">`+
+        getSelectedPokemonHeaderLayout(selectedPokemon)
+        +getSelectedPokemonBodyLayout(selectedPokemon)
+    +`</div>`;
+    document.getElementById("selectedPokemon").innerHTML += html;
+}
+
+
 function renderPokemonGridItemLayout(index) {
     html=`<div id="pokemon${index}" class="pokemon-grid-container">`;
-    html+=`<div class='d-flex justify-content-between align-items-baseline w-75'>
+    html+=
+    `<div class='d-flex justify-content-between align-items-baseline w-75'>
         <h2 id='pokemonName${index}'></h2>
         <div id='pokemonId${index}' class='align-bottom'></div>
     </div>`;
     html+=
-    `<div id='pokemonContent${index}' class='d-flex justify-content-between  w-75'>
+    `<div id='pokemonContent${index}' class='d-flex justify-content-between w-75'>
         <div class='btn-group-vertical'id='pokemonTypes${index}'></div>
-        <img id='pokemonImg${index}'>
+        <img id='pokemonImg${index}' class='pokemon-img'>
     </div>`;   
     
-    document.getElementById("pokedex").innerHTML += html;
+    document.getElementById("pokedex-grid").innerHTML += html;
 }
 
 async function loadPokemonGridValues(index) {
@@ -71,13 +84,13 @@ async function getPokemonData(index) {
         let pokemonData = await response.json();
         return ['true',pokemonData];
     } catch (e) {
-        return ['false',pokemonData];
+        return ['false',e];
     }
 
 }
 
 function emptyContainer() {
-    document.getElementById("pokedex").innerHTML = "";
+    document.getElementById("pokedex-grid").innerHTML = "";
 }
 
 function unsetCurrentPokemon() {
@@ -85,28 +98,26 @@ function unsetCurrentPokemon() {
 }
 
 
-
-
-
-
-
-
-function getPokemonBodyLayout(index) {
-    html = `<div class='pokemon-info-container'></div>`;
+function getSelectedPokemonBodyLayout(index) {
+    html = `<div class='pokemon-info-container'>Test</div>`;
     return html;
 }
 
-function getPokemonHeaderLayout(index) {
+function getSelectedPokemonHeaderLayout() {
+    index=selectedPokemon;
     html = `
     <div class='pokemon-header'>
-        <div class='pokemon-header-menue'>
+        <div class='pokemon-header-menu'>
             <img class='icon invert' src='./icons/arrow-back.png' onclick="unsetCurrentPokemon();init();">
             <img class='icon invert' src='./icons/heart.png' onclick="unsetCurrentPokemon();init();">
         </div>
-        <h2 id="pokemonName${index}" class="pokemon-name"></h2>
+        <div class='d-flex justify-content-between align-items-baseline'>
+        <h1 id='pokemonName${index}'></h1>
+        <div id='pokemonId${index}' class='align-bottom'></div>
+        </div>
         <div id="pokemonTypes${index}" class="pokemon-types">
         </div>
-        <img id="pokemonImg${index}" class="pokemon-img">
+        <img id="pokemonImg${index}" class="pokemon-img-200">
     </div>`
     return html;
 }
