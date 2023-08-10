@@ -4,73 +4,21 @@ body {
     background-color: rgba(0, 58, 182, 0.192);
 }
 
-.pokedex {
-    color: white;
-    display: flex;
-    justify-content: flex-start;
-    align-items: initial;
-    flex-wrap: wrap;
-    padding: 16px;
-
-}
-
-.pokemon-container {
-    background-color: rgba(209, 0, 10, 0.781);
-    max-height: max-content !important;
-    margin: 8px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    border-radius: 32px;
-    padding-top: 8px;
-}
-
-.pokemon-header {
-    margin-bottom: -32px;
-    z-index: 999;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    height: 200px;
-}
-
-.pokemon-info-container {
-    border-radius: 32px;
-    height: 20vh;
-    width: 150px;
-    background-color: white;
-    margin-top: auto;
-}
-
-.pokemon-header-menue {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-}
-
-.pokemon-type {
-    border-radius: 4px;
-    padding: 2px;
-}
-
-.pokemon-types {
-    display: flex;
-    gap: 2px;
-    color: black;
-    flex-wrap: wrap;
+.btn-group-vertical{
+    height: fit-content;
 }
 
 .pokemon-img {
     object-fit: cover;
+    
 }
 
 .icon {
     object-fit: cover;
     height: 16px;
-
 }
+
+
 
 .invert {
     filter: invert(1);
