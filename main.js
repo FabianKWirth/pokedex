@@ -1,5 +1,5 @@
 let selectedPokemon = 17;
-let pokemonAmount=25;
+let pokemonAmount=20;
 
 
 async function init() {
@@ -11,20 +11,27 @@ async function init() {
     }
 }
 
-
-
 async function renderPokemonGrid() {
-    emptyContainer();
+    emptyGrid();
     for (let index = 0; index < pokemonAmount; index++) {
+        let pokemonData=await getPokemonData(index);
         await renderPokemonGridItemLayout(index);
-        await loadPokemonGridValues(index);
+        await loadPokemonHeadValues(index,pokemonData);
     }
 }
 
-
 async function renderSelectedPokemon() {
+    emptySelectedPokemon();
     renderSelectedPokemonLayout();
-    await loadPokemonGridValues(selectedPokemon);
+    await loadPokemonAllValues(selectedPokemon);
+    //firstType=
+}
+
+async function loadPokemonAllValues(selectedPokemon){
+    let pokemonData= await getPokemonData(index);
+    await loadPokemonHeadValues(selectedPokemon,pokemonData);
+    await loadPokemonBodyValues(selectedPokemon,pokemonData);
+
 }
 
 function renderSelectedPokemonLayout(){
@@ -35,7 +42,6 @@ function renderSelectedPokemonLayout(){
     +`</div>`;
     document.getElementById("selectedPokemon").innerHTML += html;
 }
-
 
 function renderPokemonGridItemLayout(index) {
     html=`<div id="pokemon${index}" class="pokemon-grid-container">`;
@@ -50,12 +56,11 @@ function renderPokemonGridItemLayout(index) {
         <img id='pokemonImg${index}' class='pokemon-img'>
     </div>`;   
     
-    document.getElementById("pokedex-grid").innerHTML += html;
+    document.getElementById("pokedexGrid").innerHTML += html;
 }
 
-async function loadPokemonGridValues(index) {
 
-    let pokemonData = await getPokemonData(index);
+async function loadPokemonHeadValues(index,pokemonData) {
     if(pokemonData[0]){
         const currentPokemonData=pokemonData[1];
     let defaultImg = currentPokemonData["sprites"]["front_default"];
@@ -89,8 +94,12 @@ async function getPokemonData(index) {
 
 }
 
-function emptyContainer() {
-    document.getElementById("pokedex-grid").innerHTML = "";
+function emptyGrid() {
+    document.getElementById("pokedexGrid").innerHTML = "";
+}
+
+function emptySelectedPokemon(){
+    document.getElementById("selectedPokemon").innerHTML = "";
 }
 
 function unsetCurrentPokemon() {

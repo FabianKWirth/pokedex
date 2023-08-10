@@ -74,3 +74,75 @@
 .fairy {
     background-color: #EE99AC !important;
 }
+
+.border-normal {
+    border: thick double #A8A878 !important;
+}
+
+.border-fire {
+    border: thick double #F08030 !important;
+}
+
+.border-water {
+    border: thick double #6890F0 !important;
+}
+
+.border-grass {
+    border: thick double #205e00 !important;
+}
+
+.border-flying {
+    border: thick double #A890F0 !important;
+}
+
+.border-fighting {
+    border: thick double #C03028 !important;
+}
+
+.border-poison {
+    border: thick double #A040A0 !important;
+}
+
+.border-electric {
+    border: thick double #F8D030 !important;
+}
+
+.border-ground {
+    border: thick double #E0C068 !important;
+}
+
+.border-rock {
+    border: thick double #B8A038 !important;
+}
+
+.border-psychic {
+    border: thick double #F85888 !important;
+}
+
+.border-ice {
+    border: thick double #98D8D8 !important;
+}
+
+.border-bug {
+    border: thick double #A8B820 !important;
+}
+
+.border-ghost {
+    border: thick double #705898 !important;
+}
+
+.border-steel {
+    border: thick double #B8B8D0 !important;
+}
+
+.border-dragon {
+    border: thick double #7038F8 !important;
+}
+
+.border-dark {
+    border: thick double #705848 !important;
+}
+
+.border-fairy {
+    border: thick double #EE99AC !important;
+}
