@@ -5,27 +5,28 @@
     align-items: initial;
     flex-wrap: wrap;
     padding: 16px;
-
 }
 
-.pokemon-grid-container {
+.pokemon-grid-item-container {
+    z-index: 100;
     background-color: rgba(224, 224, 224, 0.781);
     max-height: max-content;
-    border: thick double #0092cc;
-    min-width:18%;
+    min-width: 18%;
     margin: 8px;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     border-radius: 32px;
-    transition: transform .2s; /* Animation */
-    cursor:pointer;
+    transition: transform .2s;
+    /* Animation */
+    cursor: pointer;
 }
 
-.pokemon-grid-container:hover {
-        transform: scale(1.05); /* (105% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
-    }
+.pokemon-grid-item-container:hover {
+    transform: scale(1.05);
+    /* (105% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+}
 
 .pokemon-types {
     display: flex;
@@ -33,4 +34,3 @@
     color: black;
     flex-wrap: wrap;
 }
-
