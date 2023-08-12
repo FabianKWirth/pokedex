@@ -1,5 +1,6 @@
 let selectedPokemon = null;
 let pokemonAmount = 20;
+let selectedBodyType = null;
 
 
 async function init() {
@@ -27,13 +28,12 @@ async function renderSelectedPokemon() {
 async function loadPokemonAllValues() {
     let pokemonData = await getPokemonData(selectedPokemon);
     await loadPokemonHeadValues(selectedPokemon, pokemonData);
-    await loadPokemonBodyValues(selectedPokemon, pokemonData);
-    setBorderColor('selectedPokemonHeader',pokemonData["types"]);
+    await loadPokemonBodyValues(pokemonData);
 }
 
 function renderSelectedPokemonLayout() {
     html = `
-        <div id='currentSelectedPokemon' class="w-25">`+
+        <div id='currentSelectedPokemon' class="current-selected-pokemon">`+
         getSelectedPokemonHeaderLayout(selectedPokemon)
         + getSelectedPokemonBodyLayout(selectedPokemon)
         + `</div>`;
@@ -42,23 +42,17 @@ function renderSelectedPokemonLayout() {
 
 function renderPokemonGridItemLayout(index) {
     html = `
-    <div id="pokemon${index}" class='pokemon-grid-item-container' onclick="selectPokemon(${index});">`;
-    
-        html +=
-        `<div class="d-flex justify-content-between align-items-baseline w-75">
+    <div id="pokemon${index}" class='pokemon-grid-item-container' onclick="selectPokemon(${index});">
+        <div class="d-flex justify-content-between align-items-baseline w-75">
             <h2 id='pokemonName${index}' ></h2>
             <div id='pokemonId${index}' class='align-bottom'></div>
-        </div>`;
-        html +=
-        `<div id='pokemonContent${index}' class='d-flex justify-content-between w-75' o>
+        </div>
+        <div id='pokemonContent${index}' class='d-flex justify-content-between w-75' o>
             <div class='btn-group-vertical' id='pokemonTypes${index}' ></div>
             <img id='pokemonImg${index}' class='pokemon-img' >
-        </div>`;
-    
-     html +=`</div>`;
+        </div>
+     </div>`;
     document.getElementById("pokedexGrid").innerHTML += html;
-
-
 }
 
 function selectPokemon(index) {
@@ -83,7 +77,7 @@ async function loadPokemonHeadValues(index, pokemonData) {
         document.getElementById("pokemonTypes" + index).innerHTML = "";
 
         setBorderColor("pokemon" + index, types);
-        
+
 
         for (let i = 0; i < types.length; i++) {
             document.getElementById("pokemonTypes" + index).innerHTML +=
@@ -96,8 +90,56 @@ function setBorderColor(id, types) {
     document.getElementById(id).classList.add("border-" + types[0]['type']['name']);
 }
 
-async function loadPokemonBodyValues(index, pokemonData) {
-    console.log(pokemonData);
+async function loadPokemonBodyValues(pokemonData) {
+    let informationContainer= document.getElementById('pokemonInfoContainer');
+    informationContainer.innerHTML = "";
+    informationContainer.innerHTML+=getPokemonAttributeMenu();
+
+    switch (selectedBodyType) {
+        case 'abilities':
+            informationContainer.innerHTML+=await renderAbilities(pokemonData);
+            break;
+        case 'forms':
+
+            break;
+        case 'stats':
+            break;
+        default:
+            informationContainer.innerHTML+=await renderAbilities(pokemonData);
+    }
+}
+
+function getPokemonAttributeMenu(){
+    return `<div class="btn-group pokemon-attribute-menu" role="group">
+        <button type="button menu-button" class="btn btn-secondary" onclick='setSelectedBodyType(\"abilities\")'>Abilities</button>
+        <button type="button menu-button" class="btn btn-secondary" onclick='setSelectedBodyType(\"stats\")'>Stats</button>
+        <button type="button menu-button" class="btn btn-secondary" onclick='setSelectedBodyType(\"right\")'>Right</button>
+    </div>`;
+}
+
+function setSelectedBodyType(typeName){
+    selectedBodyType=typeName;
+    console.log(selectedBodyType);
+    renderSelectedPokemon();
+}
+
+async function renderAbilities(pokemonData) {
+    let abilities = pokemonData[1]['abilities'];
+    console.log(abilities);
+
+    html = `<div class='abilities'><h3>Abilities</h3>
+    <table class='abilities-table'><thead><th>Name</th><th>Description</th></thead>`;
+    for (let index = 0; index < abilities.length; index++) {
+        const ability = abilities[index]['ability'];
+        let abilityData = await getAbilityData(ability['url']);
+
+        abilityDescription=abilityData[1]['effect_entries'][1]['effect'];
+        console.log(abilityDescription);
+        html += `<tr><td id='ability'>${ability['name']}</td><td>${abilityDescription}</td></tr>`;
+      
+    }
+    html += `</table>`;
+    return html;
 }
 
 async function getPokemonData(index) {
@@ -107,6 +149,16 @@ async function getPokemonData(index) {
         let response = await fetch(url);
         let pokemonData = await response.json();
         return ['true', pokemonData];
+    } catch (e) {
+        return ['false', e];
+    }
+}
+
+async function getAbilityData(url) {
+    try {
+        let response = await fetch(url);
+        let abilityData = await response.json();
+        return ['true', abilityData];
     } catch (e) {
         return ['false', e];
     }
@@ -122,14 +174,14 @@ function emptySelectedPokemon() {
 }
 
 function unsetCurrentPokemon() {
-    selectedPokemon=null;
+    selectedPokemon = null;
     emptySelectedPokemon();
     renderPokemonGrid();
 }
 
 
 function getSelectedPokemonBodyLayout(index) {
-    html = `<div class='pokemon-info-container'>Test</div>`;
+    html = `<div class='pokemon-info-container' id='pokemonInfoContainer'></div>`;
     return html;
 }
 
@@ -137,13 +189,13 @@ function getSelectedPokemonHeaderLayout() {
     index = selectedPokemon;
     html = `
     <div class='pokemon-header' id='selectedPokemonHeader'>
-        <div class='pokemon-header-menu'>
+        <div class='pokemon-header-menu w-75'>
             <img class='icon invert' src='./icons/arrow-back.png' onclick="unsetCurrentPokemon();">
             <img class='icon invert' src='./icons/heart.png' onclick="">
         </div>
-        <div class='d-flex justify-content-between align-items-baseline'>
+        <div class='d-flex justify-content-around align-items-baseline w-75'>
         <h1 id='pokemonName${index}'></h1>
-        <div id='pokemonId${index}' class='align-bottom'></div>
+        <div id='pokemonId${index}' class='pokemon-id align-bottom'></div>
         </div>
         <div id="pokemonTypes${index}" class="pokemon-types">
         </div>

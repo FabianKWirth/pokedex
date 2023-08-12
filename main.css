@@ -18,11 +18,22 @@ body {
     width: 200px;
 }
 
+h1 {
+    color: white !important;
+    font-size: 56px !important;
+}
 
+
+
+.abilities {
+    padding: 8px;
+    margin: 4px;
+}
 
 .icon {
     object-fit: cover;
-    height: 16px;
+    height: 24px;
+    cursor: pointer;
 }
 
 
