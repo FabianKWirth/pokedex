@@ -91,25 +91,29 @@ function setBorderColor(id, types) {
 }
 
 async function loadPokemonBodyValues(pokemonData) {
-    let informationContainer= document.getElementById('pokemonInfoContainer');
+    let informationContainer = document.getElementById('pokemonInfoContainer');
     informationContainer.innerHTML = "";
-    informationContainer.innerHTML+=getPokemonAttributeMenu();
+    informationContainer.innerHTML += getPokemonAttributeMenu();
 
     switch (selectedBodyType) {
         case 'abilities':
-            informationContainer.innerHTML+=await renderAbilities(pokemonData);
+            informationContainer.innerHTML += await getAbilities(pokemonData);
             break;
         case 'forms':
 
             break;
         case 'stats':
+            informationContainer.innerHTML += `<div><canvas id='statGraph'></canvas></div>`;
+            let stats= await getStats(pokemonData);
+            console.log(stats);
+            visualizeStats(stats);
             break;
         default:
-            informationContainer.innerHTML+=await renderAbilities(pokemonData);
+            informationContainer.innerHTML += await getAbilities(pokemonData);
     }
 }
 
-function getPokemonAttributeMenu(){
+function getPokemonAttributeMenu() {
     return `<div class="btn-group pokemon-attribute-menu" role="group">
         <button type="button menu-button" class="btn btn-secondary" onclick='setSelectedBodyType(\"abilities\")'>Abilities</button>
         <button type="button menu-button" class="btn btn-secondary" onclick='setSelectedBodyType(\"stats\")'>Stats</button>
@@ -117,15 +121,13 @@ function getPokemonAttributeMenu(){
     </div>`;
 }
 
-function setSelectedBodyType(typeName){
-    selectedBodyType=typeName;
-    console.log(selectedBodyType);
+function setSelectedBodyType(typeName) {
+    selectedBodyType = typeName;
     renderSelectedPokemon();
 }
 
-async function renderAbilities(pokemonData) {
+async function getAbilities(pokemonData) {
     let abilities = pokemonData[1]['abilities'];
-    console.log(abilities);
 
     html = `<div class='abilities'><h3>Abilities</h3>
     <table class='abilities-table'><thead><th>Name</th><th>Description</th></thead>`;
@@ -133,13 +135,62 @@ async function renderAbilities(pokemonData) {
         const ability = abilities[index]['ability'];
         let abilityData = await getAbilityData(ability['url']);
 
-        abilityDescription=abilityData[1]['effect_entries'][1]['effect'];
-        console.log(abilityDescription);
+        let abilityDescription = getAbilityDescription(abilityData);
+
         html += `<tr><td id='ability'>${ability['name']}</td><td>${abilityDescription}</td></tr>`;
-      
+
     }
-    html += `</table>`;
+    html += `</table></div>`;
     return html;
+}
+
+async function getStats(pokemonData) {
+    let statNames=[];
+    let statValues=[];
+    let stats = pokemonData[1]['stats'];
+    console.log(stats);
+    for (let index = 0; index < stats.length; index++) {
+        const stat = stats[index];
+        statNames[index] = stat['stat']['name'];
+        statValues[index] = stat['base_stat'];
+    }
+    return [statNames,statValues];
+}
+
+function getAbilityDescription(abilityData) {
+    let abilityDescription = "";
+    //german and englisch texts are mixed up in array indexes
+    effectEntries = abilityData[1]['effect_entries'];
+    for (let index = 0; index < effectEntries.length; index++) {
+        const effectEntry = effectEntries[index];
+        if (effectEntry['language']['name'] == "en") {
+            abilityDescription = effectEntry['effect'];
+        }
+    }
+    return abilityDescription;
+}
+
+function visualizeStats(stats) {
+    const ctx = document.getElementById('statGraph');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: stats[0],
+            datasets: [{
+                label: '',
+                data: stats[1],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
 }
 
 async function getPokemonData(index) {
