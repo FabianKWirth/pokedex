@@ -43,7 +43,7 @@ h1 {
 
 .next-icon{
     object-fit: cover;
-    height: 20vh;
+    height: 10vh;
     cursor: pointer;
     z-index: 999;
 
@@ -51,4 +51,9 @@ h1 {
 
 .flip-horizontally {
     transform: scaleX(-1);
+}
+
+#postGrid{
+    display: flex;
+    justify-content: center;
 }

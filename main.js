@@ -1,5 +1,6 @@
 let selectedPokemon = null;
-let pokemonAmount = 20;
+let pokemonAmount = 40;
+let maxPokemonIdofGrid=0;
 let selectedBodyType = null;
 
 
@@ -12,12 +13,14 @@ async function init() {
 }
 
 async function renderPokemonGrid() {
-    emptyGrid();
-    for (let index = 0; index < pokemonAmount; index++) {
+    for (let index = maxPokemonIdofGrid; index < pokemonAmount; index++) {
         let pokemonData = await getPokemonData(index);
         await renderPokemonGridItemLayout(index);
         await loadPokemonHeadValues(index, pokemonData);
     }
+    document.getElementById('postGrid').innerHTML="<button class='btn btn-dark btn-lg' onclick='increasePokemonPool()'>Weitere Laden</button>"
+    document.getElementById("pokemon"+maxPokemonIdofGrid).scrollIntoView();
+    maxPokemonIdofGrid=pokemonAmount;
 }
 
 async function renderSelectedPokemon() {
@@ -30,6 +33,11 @@ async function loadPokemonAllValues() {
     let pokemonData = await getPokemonData(selectedPokemon);
     await loadPokemonHeadValues(selectedPokemon, pokemonData);
     await loadPokemonBodyValues(pokemonData);
+}
+
+async function increasePokemonPool(){
+    pokemonAmount=pokemonAmount+40;
+    await renderPokemonGrid();
 }
 
 async function renderNextPokemon() {
