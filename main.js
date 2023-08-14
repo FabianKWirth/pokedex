@@ -3,6 +3,7 @@ let pokemonAmount = 20;
 let selectedBodyType = null;
 
 
+
 async function init() {
     await renderPokemonGrid();
     if (selectedPokemon != null) {
@@ -35,7 +36,7 @@ function renderSelectedPokemonLayout() {
     html = `
         <div id='currentSelectedPokemon' class="current-selected-pokemon">`+
         getSelectedPokemonHeaderLayout(selectedPokemon)
-        + getSelectedPokemonBodyLayout(selectedPokemon)
+        + getSelectedPokemonBodyLayout()
         + `</div>`;
     document.getElementById("selectedPokemon").innerHTML += html;
 }
@@ -55,9 +56,9 @@ function renderPokemonGridItemLayout(index) {
     document.getElementById("pokedexGrid").innerHTML += html;
 }
 
-function selectPokemon(index) {
+async function selectPokemon(index) {
     selectedPokemon = index;
-    renderSelectedPokemon();
+    await renderSelectedPokemon();
 }
 
 async function loadPokemonHeadValues(index, pokemonData) {
@@ -77,7 +78,9 @@ async function loadPokemonHeadValues(index, pokemonData) {
         document.getElementById("pokemonTypes" + index).innerHTML = "";
 
         setBorderColor("pokemon" + index, types);
+        setBackgroundColor("selectedPokemonHeader", types);
 
+       
 
         for (let i = 0; i < types.length; i++) {
             document.getElementById("pokemonTypes" + index).innerHTML +=
@@ -90,22 +93,26 @@ function setBorderColor(id, types) {
     document.getElementById(id).classList.add("border-" + types[0]['type']['name']);
 }
 
+function setBackgroundColor(id, types) {
+    let element = document.getElementById(id);
+    console.log(element);
+    if (element != null) {
+        document.getElementById(id).classList.add("card-bg-"+types[0]['type']['name']);
+    }
+}
+
 async function loadPokemonBodyValues(pokemonData) {
     let informationContainer = document.getElementById('pokemonInfoContainer');
-    informationContainer.innerHTML = "";
-    informationContainer.innerHTML += getPokemonAttributeMenu();
-
+    informationContainer.innerHTML = getPokemonAttributeMenu();
     switch (selectedBodyType) {
         case 'abilities':
             informationContainer.innerHTML += await getAbilities(pokemonData);
             break;
-        case 'forms':
-
-            break;
         case 'stats':
-            informationContainer.innerHTML += `<div><canvas id='statGraph'></canvas></div>`;
-            let stats= await getStats(pokemonData);
-            console.log(stats);
+            informationContainer.innerHTML += `<div class="chart-container">
+            <canvas id="statGraph" style=></canvas>
+            </div>`;
+            let stats = await getStats(pokemonData);
             visualizeStats(stats);
             break;
         default:
@@ -117,7 +124,6 @@ function getPokemonAttributeMenu() {
     return `<div class="btn-group pokemon-attribute-menu" role="group">
         <button type="button menu-button" class="btn btn-secondary" onclick='setSelectedBodyType(\"abilities\")'>Abilities</button>
         <button type="button menu-button" class="btn btn-secondary" onclick='setSelectedBodyType(\"stats\")'>Stats</button>
-        <button type="button menu-button" class="btn btn-secondary" onclick='setSelectedBodyType(\"right\")'>Right</button>
     </div>`;
 }
 
@@ -145,16 +151,15 @@ async function getAbilities(pokemonData) {
 }
 
 async function getStats(pokemonData) {
-    let statNames=[];
-    let statValues=[];
+    let statNames = [];
+    let statValues = [];
     let stats = pokemonData[1]['stats'];
-    console.log(stats);
     for (let index = 0; index < stats.length; index++) {
         const stat = stats[index];
         statNames[index] = stat['stat']['name'];
         statValues[index] = stat['base_stat'];
     }
-    return [statNames,statValues];
+    return [statNames, statValues];
 }
 
 function getAbilityDescription(abilityData) {
@@ -170,26 +175,63 @@ function getAbilityDescription(abilityData) {
     return abilityDescription;
 }
 
+function getDataSet(stats) {
+    const dataset = [{
+        label: 'Stats anzeigen',
+        data: stats[1],
+        fill: true,
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        borderColor: 'rgb(255, 99, 132)',
+        pointBackgroundColor: 'rgb(255, 99, 132)',
+        pointBorderColor: '#fff',
+        pointHoverBackgroundColor: '#fff',
+        pointHoverBorderColor: 'rgb(255, 99, 132)',
+    }];
+    return dataset;
+}
+
+function getRadarChartConfig() {
+    const config = {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            r: {
+                min: 0,
+                max: 100,
+                pointLabels: {
+                    font: {
+                        size: 18
+                    }
+                }
+            },
+        },
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        layout: {
+            autoPadding: true
+        }
+    };
+    return config;
+}
+
 function visualizeStats(stats) {
+
     const ctx = document.getElementById('statGraph');
 
-    new Chart(ctx, {
-        type: 'bar',
+    const dataSet = getDataSet(stats);
+
+    const config = getRadarChartConfig();
+
+    const radarChart = new Chart(ctx, {
+        type: 'radar',
         data: {
             labels: stats[0],
-            datasets: [{
-                label: '',
-                data: stats[1],
-                borderWidth: 1
-            }]
+            datasets: dataSet,
         },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
+        options: config,
     });
 }
 
@@ -230,8 +272,7 @@ function unsetCurrentPokemon() {
     renderPokemonGrid();
 }
 
-
-function getSelectedPokemonBodyLayout(index) {
+function getSelectedPokemonBodyLayout() {
     html = `<div class='pokemon-info-container' id='pokemonInfoContainer'></div>`;
     return html;
 }
@@ -241,8 +282,8 @@ function getSelectedPokemonHeaderLayout() {
     html = `
     <div class='pokemon-header' id='selectedPokemonHeader'>
         <div class='pokemon-header-menu w-75'>
-            <img class='icon invert' src='./icons/arrow-back.png' onclick="unsetCurrentPokemon();">
-            <img class='icon invert' src='./icons/heart.png' onclick="">
+            <img class='icon' src='./icons/arrow-back.png' onclick="unsetCurrentPokemon();">
+            <img class='icon' src='./icons/heart.png' onclick="">
         </div>
         <div class='d-flex justify-content-around align-items-baseline w-75'>
         <h1 id='pokemonName${index}'></h1>

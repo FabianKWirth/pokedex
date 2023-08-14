@@ -5,9 +5,9 @@
     height: auto;
 }
 
-.current-selected-pokemon{
+.current-selected-pokemon {
     z-index: 999;
-    width: 550px;
+    width: 650px;
 }
 
 .pokemon-header {
@@ -29,7 +29,7 @@
     border-radius: 32px;
     height: fit-content;
     width: 100%;
-    background-color: rgb(165, 165, 165);
+    background-color: rgb(255, 255, 255);
     margin-top: -108px;
     padding-top: 64px;
     min-height: 20vh;
@@ -43,6 +43,16 @@
     width: calc(100% - 32px);
     display: flex;
     justify-content: space-between;
+}
+
+.chart-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 25vh;
+    width: 120%;
+    margin-bottom: 12px;
+    margin-top: 12px;
 }
 
 .abilities-table th,
@@ -60,6 +70,6 @@ td {
 }
 
 .pokemon-id {
-    color: white !important;
+    color: rgb(0, 0, 0) !important;
     font-size: 32px !important;
 }

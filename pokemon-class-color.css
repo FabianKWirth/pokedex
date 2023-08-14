@@ -75,6 +75,81 @@
     background-color: #EE99AC !important;
 }
 
+.card-bg-normal {
+    background-color: #E8E8E8 !important;
+}
+
+.card-bg-fire {
+    background-color: #FFC080 !important;
+}
+
+.card-bg-water {
+    background-color: #A8D8FF !important;
+}
+
+.card-bg-grass {
+    background-color: #40FF40 !important;
+}
+
+.card-bg-flying {
+    background-color: #D0B0FF !important;
+}
+
+.card-bg-fighting {
+    background-color: #FF9090 !important;
+}
+
+.card-bg-poison {
+    background-color: #D090D0 !important;
+}
+
+.card-bg-electric {
+    background-color: #FFEC99 !important;
+}
+
+.card-bg-ground {
+    background-color: #F8E4B0 !important;
+}
+
+.card-bg-rock {
+    background-color: #E8D5A2 !important;
+}
+
+.card-bg-psychic {
+    background-color: #FFA0B8 !important;
+}
+
+.card-bg-ice {
+    background-color: #C0F0F0 !important;
+}
+
+.card-bg-bug {
+    background-color: #E0E8A0 !important;
+}
+
+.card-bg-ghost {
+    background-color: #B0A0D0 !important;
+}
+
+.card-bg-steel {
+    background-color: #F0F0F8 !important;
+}
+
+.card-bg-dragon {
+    background-color: #C090FF !important;
+}
+
+.card-bg-dark {
+    background-color: #B0A090 !important;
+}
+
+.card-bg-fairy {
+    background-color: #FFD0E0 !important;
+}
+
+
+
+
 .border-normal {
     border: thick double #A8A878 !important;
 }
