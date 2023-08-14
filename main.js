@@ -32,12 +32,28 @@ async function loadPokemonAllValues() {
     await loadPokemonBodyValues(pokemonData);
 }
 
+async function renderNextPokemon() {
+    if (selectedPokemon == null) {
+        selectedPokemon = 0;
+    }
+    selectedPokemon++;
+    await renderSelectedPokemon();
+}
+
+async function renderPreviousPokemon() {
+    if (selectedPokemon == null || selectedPokemon == 0) {
+        selectedPokemon = 1;
+    }
+    selectedPokemon--;
+    await renderSelectedPokemon();
+}
+
 function renderSelectedPokemonLayout() {
-    html = `
+    html = `<img src='./icons/next.png' class='next-icon flip-horizontally' onclick='renderPreviousPokemon()'>
         <div id='currentSelectedPokemon' class="current-selected-pokemon">`+
         getSelectedPokemonHeaderLayout(selectedPokemon)
         + getSelectedPokemonBodyLayout()
-        + `</div>`;
+        + `</div><img src='./icons/next.png' class='next-icon' onclick='renderNextPokemon()'>`;
     document.getElementById("selectedPokemon").innerHTML += html;
 }
 
@@ -80,7 +96,7 @@ async function loadPokemonHeadValues(index, pokemonData) {
         setBorderColor("pokemon" + index, types);
         setBackgroundColor("selectedPokemonHeader", types);
 
-       
+
 
         for (let i = 0; i < types.length; i++) {
             document.getElementById("pokemonTypes" + index).innerHTML +=
@@ -90,14 +106,16 @@ async function loadPokemonHeadValues(index, pokemonData) {
 }
 
 function setBorderColor(id, types) {
-    document.getElementById(id).classList.add("border-" + types[0]['type']['name']);
+    let element = document.getElementById(id);
+    if (element != null) {
+        document.getElementById(id).classList.add("border-" + types[0]['type']['name']);
+    }
 }
 
 function setBackgroundColor(id, types) {
     let element = document.getElementById(id);
-    console.log(element);
     if (element != null) {
-        document.getElementById(id).classList.add("card-bg-"+types[0]['type']['name']);
+        document.getElementById(id).classList.add("card-bg-" + types[0]['type']['name']);
     }
 }
 
