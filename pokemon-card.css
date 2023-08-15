@@ -2,19 +2,43 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: auto;
+}
+
+.pokemon-elements{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 5%;
+    z-index: 200;
+}
+
+.animate {
+    animation: moveBox 0.5s ease-in-out;
+}
+
+@keyframes moveBox {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
 }
 
 .current-selected-pokemon {
-    z-index: 999;
-    width: 650px;
+    opacity: 1 !important;
+    z-index: 999 !important;
+    width: 850px;
+
 }
 
 .pokemon-header {
     padding-top: 32px;
     padding-left: 16px;
     padding-right: 16px;
-    margin-bottom: 32px;
+    margin-bottom: 56px;
     background-color: rgb(92, 92, 92);
     border-top-left-radius: 64px;
     border-top-right-radius: 64px;
@@ -72,4 +96,11 @@ td {
 .pokemon-id {
     color: rgb(0, 0, 0) !important;
     font-size: 32px !important;
+}
+
+.next-icon{
+    object-fit: cover;
+    height: 10vh;
+    cursor: pointer;
+    z-index: 999;
 }

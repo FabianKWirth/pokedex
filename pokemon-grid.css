@@ -1,5 +1,5 @@
 .pokedex {
-    color: white;
+    color: rgb(0, 0, 0);
     display: flex;
     justify-content: flex-start;
     align-items: initial;
@@ -21,6 +21,11 @@
     transition: transform .2s;
     /* Animation */
     cursor: pointer;
+}
+
+.load-more-btn{
+    z-index: 100;
+    margin: 32px !important;
 }
 
 .pokemon-grid-item-container:hover {

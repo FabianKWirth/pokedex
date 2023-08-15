@@ -1,6 +1,6 @@
 let selectedPokemon = null;
 let pokemonAmount = 40;
-let maxPokemonIdofGrid=0;
+let maxPokemonIdofGrid = 0;
 let selectedBodyType = null;
 
 
@@ -12,15 +12,71 @@ async function init() {
     }
 }
 
+async function loadSearchResults() {
+    let index = 0;
+    let searchInput = document.getElementById("searchInput").value.toLowerCase();
+    console.log(searchInput);
+    let pokemonData = await getPokemonData(index, searchInput);
+    console.log(pokemonData);
+    emptyGrid();
+    if (searchInput != null && searchInput != "") {
+        if (pokemonData[0] == 'true') {
+            maxPokemonIdofGrid = pokemonData[1].length;
+            let index=pokemonData[1]['id']-1;
+            await renderPokemonGridItemLayout(index);
+            await loadPokemonHeadValues(index, pokemonData);
+        } else {
+            renderNothingFoundMessage(searchInput);
+        }
+    } else {
+        renderNothingFoundMessage(searchInput);
+    }
+
+    document.getElementById("postGrid").innerHTML = "<button class='btn btn-dark btn-lg load-more-btn' onclick='reset()'>Zurück</button>";
+}
+
+function reset() {
+    selectedPokemon = null;
+    pokemonAmount = 40;
+    maxPokemonIdofGrid = 0;
+    selectedBodyType = null;
+    removeAllAlerts();
+    pokemonData=[];
+    emptyGrid();
+    init();
+}
+
+function removeAllAlerts() {
+    let elements = document.getElementsByClassName('alert');
+    for (let index = 0; index < elements.length; index++) {
+        const element = elements[index];
+        element.remove();
+    }
+}
+
+function renderNothingFoundMessage(searchInput) {
+    let outputField = document.getElementById("pokedexGrid");
+    if (searchInput == null || searchInput == "") {
+        outputField.innerHTML = `<div class='alert alert-warning'>Fehler: Es wurde ein kein Begriff als Suchbegriff übergeben</div>`;
+    } else {
+        outputField.innerHTML = `<div class='alert alert-warning'>Sorry, wir konnten kein Pokemon Namens "${searchInput}" finden</div>`;
+    }
+
+}
+
 async function renderPokemonGrid() {
     for (let index = maxPokemonIdofGrid; index < pokemonAmount; index++) {
         let pokemonData = await getPokemonData(index);
         await renderPokemonGridItemLayout(index);
         await loadPokemonHeadValues(index, pokemonData);
     }
-    document.getElementById('postGrid').innerHTML="<button class='btn btn-dark btn-lg' onclick='increasePokemonPool()'>Weitere Laden</button>"
-    document.getElementById("pokemon"+maxPokemonIdofGrid).scrollIntoView();
-    maxPokemonIdofGrid=pokemonAmount;
+    renderLoadMorePokemon(maxPokemonIdofGrid);
+    maxPokemonIdofGrid = pokemonAmount;
+}
+
+function renderLoadMorePokemon(maxPokemonIdofGrid) {
+    document.getElementById('postGrid').innerHTML = "<button class='btn btn-dark btn-lg load-more-btn' onclick='increasePokemonPool()'>Weitere Laden</button>";
+    document.getElementById("pokemon" + maxPokemonIdofGrid).scrollIntoView();
 }
 
 async function renderSelectedPokemon() {
@@ -31,12 +87,12 @@ async function renderSelectedPokemon() {
 
 async function loadPokemonAllValues() {
     let pokemonData = await getPokemonData(selectedPokemon);
-    await loadPokemonHeadValues(selectedPokemon, pokemonData);
+    await loadPokemonHeadValues(selectedPokemon, pokemonData, true);
     await loadPokemonBodyValues(pokemonData);
 }
 
-async function increasePokemonPool(){
-    pokemonAmount=pokemonAmount+40;
+async function increasePokemonPool() {
+    pokemonAmount = pokemonAmount + 40;
     await renderPokemonGrid();
 }
 
@@ -57,12 +113,25 @@ async function renderPreviousPokemon() {
 }
 
 function renderSelectedPokemonLayout() {
-    html = `<img src='./icons/next.png' class='next-icon flip-horizontally' onclick='renderPreviousPokemon()'>
+    html = `
+        <div class='pokemon-elements animate'>
+        <img src='./icons/next.png' class='next-icon flip-horizontally' onclick='renderPreviousPokemon()'>
         <div id='currentSelectedPokemon' class="current-selected-pokemon">`+
         getSelectedPokemonHeaderLayout(selectedPokemon)
         + getSelectedPokemonBodyLayout()
-        + `</div><img src='./icons/next.png' class='next-icon' onclick='renderNextPokemon()'>`;
+        + `</div><img src='./icons/next.png' class='next-icon' onclick='renderNextPokemon()'>
+        </div>`;
     document.getElementById("selectedPokemon").innerHTML += html;
+
+    removeAnimation('currentSelectedPokemon');
+
+}
+
+
+function removeAnimation(pokemonId) {
+    setTimeout(function () {
+        document.getElementById(pokemonId).classList.remove('animate');
+    }, 1000);
 }
 
 function renderPokemonGridItemLayout(index) {
@@ -85,11 +154,20 @@ async function selectPokemon(index) {
     await renderSelectedPokemon();
 }
 
-async function loadPokemonHeadValues(index, pokemonData) {
+async function loadPokemonHeadValues(index, pokemonData, forSelectedPokemon = false) {
     if (pokemonData[0]) {
         const currentPokemonData = pokemonData[1];
 
-        let defaultImg = currentPokemonData["sprites"]["front_default"];
+        let defaultImg = "";
+        let types = currentPokemonData["types"];
+
+        if (forSelectedPokemon == true) {
+            setBackgroundColor("selectedPokemonHeader", types);
+            defaultImg = currentPokemonData["sprites"]["other"]["home"]["front_default"];
+        } else {
+            defaultImg = currentPokemonData["sprites"]["front_default"];
+        }
+
         document.getElementById("pokemonImg" + index).src = defaultImg;
 
         let name = currentPokemonData["name"];
@@ -98,13 +176,10 @@ async function loadPokemonHeadValues(index, pokemonData) {
         let id = index + 1;
         document.getElementById("pokemonId" + index).innerHTML = '#' + id;
 
-        let types = currentPokemonData["types"];
+
         document.getElementById("pokemonTypes" + index).innerHTML = "";
 
         setBorderColor("pokemon" + index, types);
-        setBackgroundColor("selectedPokemonHeader", types);
-
-
 
         for (let i = 0; i < types.length; i++) {
             document.getElementById("pokemonTypes" + index).innerHTML +=
@@ -168,8 +243,8 @@ async function getAbilities(pokemonData) {
         let abilityData = await getAbilityData(ability['url']);
 
         let abilityDescription = getAbilityDescription(abilityData);
-
-        html += `<tr><td id='ability'>${ability['name']}</td><td>${abilityDescription}</td></tr>`;
+        let abilityName = ability['name'].toUpperCase();
+        html += `<tr><td id='ability'>${abilityName}</td><td>${abilityDescription}</td></tr>`;
 
     }
     html += `</table></div>`;
@@ -223,7 +298,6 @@ function getRadarChartConfig() {
         scales: {
             r: {
                 min: 0,
-                max: 100,
                 pointLabels: {
                     font: {
                         size: 18
@@ -261,10 +335,18 @@ function visualizeStats(stats) {
     });
 }
 
-async function getPokemonData(index) {
-    pokemonId = index + 1;//pokemonId startet bei 1; index bei 0; 
+async function getPokemonData(index, searchInput = null) {
+    let url = "";
+    if (searchInput == "") {
+        return [false, "Empty String as Input given"];
+    } else if (searchInput == null) {
+        pokemonId = index + 1;//pokemonId startet bei 1; index bei 0; 
+        url = "https://pokeapi.co/api/v2/pokemon/" + pokemonId;
+    } else {
+        url = "https://pokeapi.co/api/v2/pokemon/" + searchInput;
+    }
+
     try {
-        let url = "https://pokeapi.co/api/v2/pokemon/" + pokemonId;
         let response = await fetch(url);
         let pokemonData = await response.json();
         return ['true', pokemonData];
@@ -277,9 +359,9 @@ async function getAbilityData(url) {
     try {
         let response = await fetch(url);
         let abilityData = await response.json();
-        return ['true', abilityData];
+        return [true, abilityData];
     } catch (e) {
-        return ['false', e];
+        return [false, e];
     }
 
 }
@@ -295,7 +377,6 @@ function emptySelectedPokemon() {
 function unsetCurrentPokemon() {
     selectedPokemon = null;
     emptySelectedPokemon();
-    renderPokemonGrid();
 }
 
 function getSelectedPokemonBodyLayout() {

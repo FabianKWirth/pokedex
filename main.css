@@ -5,6 +5,34 @@ body {
     background-color: rgb(199, 199, 199) !important;
 }
 
+header {
+    padding: 2%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+    background-color: black;
+
+}
+
+header h1 {
+    color: rgb(184, 184, 0) !important;
+    font-size: 56px !important;
+}
+
+.search {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.search-input {
+    height: 48px;
+    font-size: 32px;
+    border-radius: 8px;
+}
+
+
 .btn-group-vertical {
     height: fit-content;
 }
@@ -18,12 +46,6 @@ body {
     width: 200px;
 }
 
-h1 {
-    color: rgb(0, 0, 0) !important;
-    font-size: 56px !important;
-}
-
-
 
 .abilities {
     padding: 8px;
@@ -32,7 +54,7 @@ h1 {
 
 .icon {
     object-fit: cover;
-    height: 24px;
+    height: 48px;
     cursor: pointer;
 }
 
@@ -41,19 +63,13 @@ h1 {
     filter: invert(1);
 }
 
-.next-icon{
-    object-fit: cover;
-    height: 10vh;
-    cursor: pointer;
-    z-index: 999;
 
-}
 
 .flip-horizontally {
     transform: scaleX(-1);
 }
 
-#postGrid{
+#postGrid {
     display: flex;
     justify-content: center;
 }
