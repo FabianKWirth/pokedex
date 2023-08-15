@@ -3,8 +3,6 @@ let pokemonAmount = 40;
 let maxPokemonIdofGrid = 0;
 let selectedBodyType = null;
 
-
-
 async function init() {
     await renderPokemonGrid();
     if (selectedPokemon != null) {
@@ -15,16 +13,16 @@ async function init() {
 async function loadSearchResults() {
     let index = 0;
     let searchInput = document.getElementById("searchInput").value.toLowerCase();
-    console.log(searchInput);
     let pokemonData = await getPokemonData(index, searchInput);
-    console.log(pokemonData);
-    emptyGrid();
     if (searchInput != null && searchInput != "") {
         if (pokemonData[0] == 'true') {
             maxPokemonIdofGrid = pokemonData[1].length;
             let index=pokemonData[1]['id']-1;
-            await renderPokemonGridItemLayout(index);
-            await loadPokemonHeadValues(index, pokemonData);
+            if(index!=selectedPokemon){
+                emptyGrid();
+                await renderPokemonGridItemLayout(index);
+                await loadPokemonHeadValues(index, pokemonData);
+            }
         } else {
             renderNothingFoundMessage(searchInput);
         }
@@ -55,6 +53,7 @@ function removeAllAlerts() {
 }
 
 function renderNothingFoundMessage(searchInput) {
+    emptyGrid();
     let outputField = document.getElementById("pokedexGrid");
     if (searchInput == null || searchInput == "") {
         outputField.innerHTML = `<div class='alert alert-warning'>Fehler: Es wurde ein kein Begriff als Suchbegriff übergeben</div>`;
@@ -171,7 +170,9 @@ async function loadPokemonHeadValues(index, pokemonData, forSelectedPokemon = fa
         document.getElementById("pokemonImg" + index).src = defaultImg;
 
         let name = currentPokemonData["name"];
+        name= name.charAt(0).toUpperCase() + name.slice(1);//Sets first letter to upper-case
         document.getElementById("pokemonName" + index).innerHTML = name;
+
 
         let id = index + 1;
         document.getElementById("pokemonId" + index).innerHTML = '#' + id;
@@ -392,11 +393,11 @@ function getSelectedPokemonHeaderLayout() {
             <img class='icon' src='./icons/arrow-back.png' onclick="unsetCurrentPokemon();">
             <img class='icon' src='./icons/heart.png' onclick="">
         </div>
-        <div class='d-flex justify-content-around align-items-baseline w-75'>
+        <div class='d-flex justify-content-between align-items-baseline w-75'>
         <h1 id='pokemonName${index}'></h1>
         <div id='pokemonId${index}' class='pokemon-id align-bottom'></div>
         </div>
-        <div id="pokemonTypes${index}" class="pokemon-types">
+        <div id="pokemonTypes${index}" class="pokemon-types d-flex justify-content-start w-75">
         </div>
         <img id="pokemonImg${index}" class="pokemon-img-200">
     </div>`

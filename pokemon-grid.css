@@ -21,6 +21,7 @@
     transition: transform .2s;
     /* Animation */
     cursor: pointer;
+    box-shadow: 5px 5px 12px #21252959;
 }
 
 .load-more-btn{

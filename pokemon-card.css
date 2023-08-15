@@ -14,7 +14,7 @@
 }
 
 .animate {
-    animation: moveBox 0.5s ease-in-out;
+    animation: moveBox 1s ease-in-out;
 }
 
 @keyframes moveBox {
@@ -48,6 +48,7 @@
     justify-content: space-between;
     height: fit-content;
 }
+
 
 .pokemon-info-container {
     border-radius: 32px;
