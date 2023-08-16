@@ -15,10 +15,11 @@ header {
 
 }
 
-header h1 {
+h1 {
     color: rgb(184, 184, 0) !important;
     font-size: 56px !important;
 }
+
 
 .search {
     display: flex;
@@ -72,4 +73,29 @@ header h1 {
 #postGrid {
     display: flex;
     justify-content: center;
+}
+
+@media only screen and (max-width: 800px) {
+    header{
+        flex-direction: column;
+    }
+
+    .search-input{ 
+        height:48px;
+        font-size: 24px;
+    }
+
+}
+
+@media only screen and (max-width: 400px) {
+    header{
+        flex-direction: column;
+    }
+
+    .search-input{ 
+        width:50%;
+        height:48px;
+        font-size: 24px;
+    }
+
 }

@@ -1,7 +1,7 @@
 .pokedex {
     color: rgb(0, 0, 0);
     display: flex;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: initial;
     flex-wrap: wrap;
     padding: 16px;
@@ -11,7 +11,7 @@
     z-index: 100;
     background-color: rgba(224, 224, 224, 0.781);
     max-height: max-content;
-    min-width: 18%;
+    min-width: 300px;
     margin: 8px;
     display: flex;
     justify-content: center;

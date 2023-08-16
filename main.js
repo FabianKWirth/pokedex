@@ -394,7 +394,7 @@ function getSelectedPokemonHeaderLayout() {
             <img class='icon' src='./icons/heart.png' onclick="">
         </div>
         <div class='d-flex justify-content-between align-items-baseline w-75'>
-        <h1 id='pokemonName${index}'></h1>
+        <h2 id='pokemonName${index}'></h2>
         <div id='pokemonId${index}' class='pokemon-id align-bottom'></div>
         </div>
         <div id="pokemonTypes${index}" class="pokemon-types d-flex justify-content-start w-75">
