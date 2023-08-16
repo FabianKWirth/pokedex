@@ -113,12 +113,14 @@ async function renderPreviousPokemon() {
 
 function renderSelectedPokemonLayout() {
     html = `
-        <div class='pokemon-elements animate'>
-        <img src='./icons/next.png' class='next-icon flip-horizontally' onclick='renderPreviousPokemon()'>
-        <div id='currentSelectedPokemon' class="current-selected-pokemon">`+
-        getSelectedPokemonHeaderLayout(selectedPokemon)
-        + getSelectedPokemonBodyLayout()
-        + `</div><img src='./icons/next.png' class='next-icon' onclick='renderNextPokemon()'>
+        <div class='pokemon-elements animate w-100'>
+            <div id='currentSelectedPokemon' class="current-selected-pokemon">`+
+            getSelectedPokemonHeaderLayout(selectedPokemon)
+            + getSelectedPokemonBodyLayout()
+            + `
+            <nav class='change-pokemon-menu'><img src='./icons/next.png' class='next-icon flip-horizontally' onclick='renderPreviousPokemon()'>
+            <img src='./icons/next.png' class='next-icon' onclick='renderNextPokemon()'></nav>
+            </div>
         </div>`;
     document.getElementById("selectedPokemon").innerHTML += html;
 
