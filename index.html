@@ -13,19 +13,22 @@
     <link rel='stylesheet' type='text/css' media='screen' href='pokemon-class-color.css'>
     <link rel='stylesheet' type='text/css' media='screen' href='./node_modules/bootstrap/dist/css/bootstrap.min.css'>
     <script src='main.js'></script>
+    <script src='./templates/render.js'></script>
+    <script src='./templates/get.js'></script>
+    <script src='./templates/set.js'></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body onload="init();">
     <header>
-        <h1>Pokédex</h1>
+        <h1><a href='index.html' class='title-link'>Pokédex</a></h1>
         <div class='search'>
             <input type='text' id="searchInput" class="search-input" placeholder="Pikachu">
             <button class="btn btn-warning btn-lg" onclick="loadSearchResults();">search</button>
         </div>
     </header>
 
-    <div id='selectedPokemon' class='selected-pokemon-container'></div>
+    <div id='selectedPokemon' class='selected-pokemon-container w-100'></div>
     <div id="pokedexGrid" class="pokedex">
     </div>
     <div id="postGrid"></div>

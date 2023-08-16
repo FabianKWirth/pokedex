@@ -20,6 +20,10 @@ h1 {
     font-size: 56px !important;
 }
 
+.title-link{
+    color: white !important;
+    text-decoration: none !important;
+}
 
 .search {
     display: flex;
@@ -64,9 +68,7 @@ h1 {
     filter: invert(1);
 }
 
-.hide {
-    display: none;
-}
+
 
 
 
