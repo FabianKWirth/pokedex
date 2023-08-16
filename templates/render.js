@@ -49,7 +49,7 @@ async function renderPreviousPokemon() {
 
 function renderSelectedPokemonLayout() {
     html = `
-        <div id='pokemonElements' class='pokemon-elements animate w-100'>
+        <div id='pokemonElements' class='pokemon-elements animate w-100' onclick="unsetCurrentPokemon()">
             <div id='currentSelectedPokemon' class="current-selected-pokemon">`+
         getSelectedPokemonHeaderLayout(selectedPokemon)
         + getSelectedPokemonBodyLayout()
@@ -60,8 +60,17 @@ function renderSelectedPokemonLayout() {
             </div>
         </div>`;
     document.getElementById("selectedPokemon").innerHTML += html;
+    stopEventPropagation("currentSelectedPokemon");
     removeAnimation('pokemonElements');
 }
+
+function stopEventPropagation(){
+    document.getElementById("currentSelectedPokemon").addEventListener("click", stopEvent, false);
+}
+
+function stopEvent(event) {
+    event.stopPropagation();
+  }
 
 function renderPokemonGridItemLayout(index) {
     html = `

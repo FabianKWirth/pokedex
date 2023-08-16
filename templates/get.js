@@ -121,8 +121,8 @@ function getSelectedPokemonHeaderLayout() {
     html = `
     <div class='pokemon-header' id='selectedPokemonHeader'>
         <div class='pokemon-header-menu w-75'>
-            <img class='icon' src='./icons/arrow-back.png' onclick="unsetCurrentPokemon();">
-            <img class='icon' src='./icons/heart.png' onclick="">
+            <img class='icon' src='./icons/arrow-back.png' onclick="unsetCurrentPokemon()">
+            <img class='icon' src='./icons/heart.png'>
         </div>
         <div class='d-flex justify-content-between align-items-baseline w-75'>
         <h2 id='pokemonName${index}'></h2>
@@ -136,7 +136,8 @@ function getSelectedPokemonHeaderLayout() {
 }
 
 function getPokemonAttributeMenu() {
-    return `<div class="btn-group pokemon-attribute-menu" role="group">
+    return `
+    <div class="btn-group pokemon-attribute-menu" role="group">
         <button type="button menu-button" class="btn btn-secondary" onclick='setSelectedBodyType(\"abilities\")'>Abilities</button>
         <button type="button menu-button" class="btn btn-secondary" onclick='setSelectedBodyType(\"stats\")'>Stats</button>
     </div>`;

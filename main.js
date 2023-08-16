@@ -10,14 +10,6 @@ async function init() {
     }
 }
 
-
-
-
-
-
-
-
-
 async function increasePokemonPool() {
     pokemonAmount = pokemonAmount + 40;
     await renderPokemonGrid();
