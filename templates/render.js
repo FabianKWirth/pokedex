@@ -49,16 +49,17 @@ async function renderPreviousPokemon() {
 
 function renderSelectedPokemonLayout() {
     html = `
-        <div id='pokemonElements' class='pokemon-elements animate w-100' onclick="unsetCurrentPokemon()">
-            <div id='currentSelectedPokemon' class="current-selected-pokemon">`+
-        getSelectedPokemonHeaderLayout(selectedPokemon)
-        + getSelectedPokemonBodyLayout()
-        + `<nav class='change-pokemon-menu'>
+        <div id='pokemonElements' class='pokemon-elements animate w-100 overflow-y-scroll position-fixed' onclick="unsetCurrentPokemon()">
+                <div id='currentSelectedPokemon' class="current-selected-pokemon">`+
+                getSelectedPokemonHeaderLayout(selectedPokemon)
+                + getSelectedPokemonBodyLayout()
+                + `<nav class='change-pokemon-menu'>
                     <img src='./icons/next.png' class='next-icon flip-horizontally' onclick='renderPreviousPokemon()'>
                     <img src='./icons/next.png' class='next-icon' onclick='renderNextPokemon()'>
-                </nav>
-            </div>
-        </div>`;
+                    </nav>
+                </div>
+        </div>
+        `;
     document.getElementById("selectedPokemon").innerHTML += html;
     stopEventPropagation("currentSelectedPokemon");
     removeAnimation('pokemonElements');

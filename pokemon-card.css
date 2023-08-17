@@ -7,12 +7,13 @@
 .pokemon-elements {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: start;
     z-index: 200;
+
     position: fixed;
     overflow-y: scroll;
-    top: 16px;
-    bottom: 16px;
+    height: 90%;
+    top:16px;
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
@@ -44,6 +45,7 @@
     z-index: 999 !important;
     width: 850px;
     max-width: 90% !important;
+    height:fit-content;
 
 }
 
