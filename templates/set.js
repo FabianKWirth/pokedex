@@ -4,21 +4,16 @@ async function setPokemonAllValues() {
     await setPokemonBodyValues(pokemonData);
 }
 
-async function setSearchResults() {
-    let index = 0;
+async function renderSearchResults() {
     let searchInput = document.getElementById("searchInput").value.toLowerCase();
-    let pokemonData = await getPokemonData(index, searchInput);
-    if (searchInput != null && searchInput != "") {
-        if (pokemonData[0] == 'true') {
-            maxPokemonIdofGrid = pokemonData[1].length;
-            let index = pokemonData[1]['id'] - 1;
-            if (index != selectedPokemon) {
-                emptyGrid();
-                await renderPokemonGridItemLayout(index);
-                await setPokemonHeadValues(index, pokemonData);
-            }
-        } else {
-            renderNothingFoundMessage(searchInput);
+    let pokemonData = await getPokemonData(0, searchInput);
+    if (searchInput != null && searchInput != "" && pokemonData[0] == 'true') {
+        maxPokemonIdofGrid = pokemonData[1].length;
+        let index = pokemonData[1]['id'] - 1;
+        if (index != selectedPokemon) {
+            emptyGrid();
+            await renderPokemonGridItemLayout(index);
+            await setPokemonHeadValues(index, pokemonData);
         }
     } else {
         renderNothingFoundMessage(searchInput);

@@ -23,10 +23,10 @@
 <body onload="init();">
     <header>
         <h1><a href='index.html' class='title-link'>Pokédex</a></h1>
-        <div class='search'>
-            <input type='text' id="searchInput" class="search-input" placeholder="Pikachu">
-            <button class="btn btn-warning btn-lg" onclick="loadSearchResults();">search</button>
-        </div>
+        <form class='search'>
+            <input type='text' id="searchInput" class="search-input" placeholder="Pikachu" onfocusout="renderSearchResults();">
+            <button type="button" class="btn btn-warning btn-lg" onclick="renderSearchResults();">search</button>
+        </form>
     </header>
 
     <div id='selectedPokemon' class='selected-pokemon-container w-100'></div>

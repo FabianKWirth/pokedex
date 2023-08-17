@@ -65,8 +65,8 @@ function renderSelectedPokemonLayout() {
     removeAnimation('pokemonElements');
 }
 
-function stopEventPropagation(){
-    document.getElementById("currentSelectedPokemon").addEventListener("click", stopEvent, false);
+function stopEventPropagation(elementId){
+    document.getElementById(elementId).addEventListener("click", stopEvent, false);
 }
 
 function stopEvent(event) {
