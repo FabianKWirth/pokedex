@@ -13,7 +13,6 @@ header {
     align-items: center;
     flex-direction: row;
     background-color: black;
-
 }
 
 h1 {
@@ -64,9 +63,7 @@ h1 {
     cursor: pointer;
 }
 
-.hide{
-    display: none;
-}
+
 
 .invert {
     filter: invert(1);
@@ -80,6 +77,43 @@ h1 {
 #postGrid {
     display: flex;
     justify-content: center;
+}
+
+.loading-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    opacity: 0.3;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.spinner {
+    width: 166px;
+    height: 166px;
+    border: 24px solid rgba(0, 0, 0, 0.1);
+    border-top: 24px solid #003253;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.hide {
+    display: none;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 @media only screen and (max-width: 800px) {
@@ -109,3 +143,4 @@ h1 {
         font-size: 24px;
     }
 }
+

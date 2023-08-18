@@ -1,15 +1,15 @@
 let selectedPokemon = null;
 let selectedBodyType = null;
+let maxRenderedPokemonIndex = 0;
 
 async function init() {
     await loadPokemons();
     await renderPokemonGrid();
-    console.log(pokemonData);
-    console.log(abilityIdNameAssignment);
 }
 
 async function increasePokemonPool() {
     await loadPokemons();
+    await renderPokemonGrid();
 }
 
 
@@ -37,12 +37,19 @@ async function getAbilities(pokemonId) {
     html = `<div class='abilities'><h3>Abilities</h3>
     <table class='abilities-table'><thead><th>Name</th><th>Description</th></thead>`;
     for (let index = 0; index < currentPokemonAbilities.length; index++) {
-        let abilityName = currentPokemonAbilities[index]['ability']['name'];
-        let abilityDescription = getAbilityDescription(abilityName);
-        html += `<tr><td id='ability'>${abilityName.toUpperCase()}</td><td>${abilityDescription}</td></tr>`;
+        html += getSingleAbility(currentPokemonAbilities[index])
+
+
     }
     html += `</table></div>`;
     return html;
+}
+
+function getSingleAbility(ability) {
+    let abilityId = ability['ability']['id'];
+    let abilityName = ability['ability']['name'];
+    let abilityDescription = getAbilityDescription(abilityId);
+    return `<tr><td id='ability'>${abilityName.toUpperCase()}</td><td>${abilityDescription}</td></tr>`;
 }
 
 async function getStats() {
@@ -57,29 +64,29 @@ async function getStats() {
     return [statNames, statValues];
 }
 
-function getAbilityDescription(abilityName) {
-    console.log(abilityName);
-    console.log(abilityData);
+function getAbilityDescription(abilityId) {
+    let abilityData = getAbilityData(abilityId);
     //german and englisch texts are mixed up in array indexes
-    effectEntries = abilityData[1]['effect_entries'];
-        
-    let abilityDescription = "";
-    //abilityDescription=getEnglishDescription(found,"en");
+    let effectEntries = abilityData['effect_entries'];
+
+    abilityDescription = getAbilityDescriptionText(effectEntries, "en");
 
     return abilityDescription;
 }
 
-function getAbilityId(abilityName){
-
+function getAbilityData(abilityId) {
+    return abilityData[abilityId];
 }
 
-function getEnglishDescription(abilityData,languageCode){
-    for (let index = 0; index < abilityData.length; index++) {
-        const effectEntry = abilityData[index];
+function getAbilityDescriptionText(effectEntries, languageCode) {
+    abilityDescription = "";
+    for (let index = 0; index < effectEntries.length; index++) {
+        const effectEntry = effectEntries[index];
         if (effectEntry['language']['name'] == languageCode) {
             abilityDescription = effectEntry['effect'];
         }
     }
+    return abilityDescription;
 }
 
 function getDataSet(stats) {
@@ -154,16 +161,14 @@ function getPokemonAttributeMenu() {
         <button type="button menu-button" class="btn btn-secondary" onclick='setSelectedBodyType(\"stats\")'>Stats</button>
     </div>`;
 }
+
 async function setPokemonAllValues() {
-    setPokemonHeadValues(selectedPokemon, pokemonData, true);
-    await setPokemonBodyValues(pokemonData);
+    setPokemonHeadValues(selectedPokemon, true);
+    await setPokemonBodyValues();
 }
 
-
 function setPokemonHeadValues(index, isSelectedPokemon = false) {
-    console.log(pokemonData);
     const currentPokemonData = pokemonData[index];
-    console.log(currentPokemonData);
     if (isSelectedPokemon == true) {
         setImg(index, currentPokemonData["sprites"]["other"]["home"]["front_default"]);
         setBackgroundColor("selectedPokemonHeader", currentPokemonData["types"]);
@@ -175,7 +180,6 @@ function setPokemonHeadValues(index, isSelectedPokemon = false) {
     setId(index);
     setTypes(index, currentPokemonData["types"]);
 }
-
 
 function setImg(index, source) {
     document.getElementById("pokemonImg" + index).src = source;
@@ -227,7 +231,7 @@ async function setPokemonBodyValues() {
             informationContainer.innerHTML += `<div class="chart-container">
             <canvas id="statGraph" style=></canvas>
             </div>`;
-            let stats = await getStats(pokemonData);
+            let stats = await getStats();
             visualizeStats(stats);
             break;
         default:
@@ -242,18 +246,21 @@ async function setSelectedBodyType(typeName) {
 
 
 async function renderPokemonGrid() {
-    for (let index = 0; index < pokemonData.length; index++) {
+    for (let index = maxRenderedPokemonIndex; index < pokemonData.length; index++) {
         let currentPokemonData = pokemonData[index];
         await renderPokemonGridItemLayout(index);
         await setPokemonHeadValues(index, currentPokemonData);
+        maxRenderedPokemonIndex = index;
     }
     renderLoadMorePokemon();
+    maxRenderedPokemonIndex++;
+    
 }
 
-function renderLoadMorePokemon(maxPokemonIdofGrid) {
+function renderLoadMorePokemon() {
     document.getElementById('postGrid').innerHTML = "<button class='btn btn-dark btn-lg load-more-btn' onclick='increasePokemonPool()'>Weitere Laden</button>";
-    if (maxPokemonIdofGrid > 40) {
-        document.getElementById("pokemon" + maxPokemonIdofGrid).scrollIntoView();
+    if (maxRenderedPokemonIndex > 20) {
+        document.getElementById("pokemon" + maxRenderedPokemonIndex).scrollIntoView();
     }
 }
 
@@ -268,7 +275,11 @@ async function renderNextPokemon() {
         selectedPokemon = 0;
     }
     selectedPokemon++;
+    if (!pokemonData[selectedPokemon]) {
+        await increasePokemonPool(); 
+    }
     await renderSelectedPokemon();
+   
 }
 
 async function renderPreviousPokemon() {
@@ -283,9 +294,9 @@ function renderSelectedPokemonLayout() {
     html = `
         <div id='pokemonElements' class='pokemon-elements animate w-100 overflow-y-scroll position-fixed' onclick="unsetCurrentPokemon()">
                 <div id='currentSelectedPokemon' class="current-selected-pokemon">`+
-                getSelectedPokemonHeaderLayout(selectedPokemon)
-                + getSelectedPokemonBodyLayout()
-                + `<nav class='change-pokemon-menu'>
+        getSelectedPokemonHeaderLayout(selectedPokemon)
+        + getSelectedPokemonBodyLayout()
+        + `<nav class='change-pokemon-menu'>
                     <img src='./icons/next.png' class='next-icon flip-horizontally' onclick='renderPreviousPokemon()'>
                     <img src='./icons/next.png' class='next-icon' onclick='renderNextPokemon()'>
                     </nav>
@@ -297,13 +308,13 @@ function renderSelectedPokemonLayout() {
     removeAnimation('pokemonElements');
 }
 
-function stopEventPropagation(elementId){
+function stopEventPropagation(elementId) {
     document.getElementById(elementId).addEventListener("click", stopEvent, false);
 }
 
 function stopEvent(event) {
     event.stopPropagation();
-  }
+}
 
 function renderPokemonGridItemLayout(index) {
     html = `
