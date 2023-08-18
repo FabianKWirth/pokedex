@@ -3,10 +3,8 @@ let selectedBodyType = null;
 
 async function init() {
     await loadPokemons();
-    console.log(pokemonData);
-    console.log(abilityData);
-    console.log(pokemonData.length);
     await renderPokemonGrid();
+    console.log(abilityIdNameAssignment);
 }
 
 async function increasePokemonPool() {
@@ -37,13 +35,10 @@ async function getAbilities(pokemonId) {
     let currentPokemonAbilities = pokemonData[pokemonId]['abilities'];
     html = `<div class='abilities'><h3>Abilities</h3>
     <table class='abilities-table'><thead><th>Name</th><th>Description</th></thead>`;
-    for (let index = 0; index < abilities.length; index++) {
-        const ability = abilities[index]['ability'];
-        let abilityData = abilities[index]['ability']['name'];
-        let abilityDescription = getAbilityDescription(abilityData);
-        let abilityName = ability['name'].toUpperCase();
-        html += `<tr><td id='ability'>${abilityName}</td><td>${abilityDescription}</td></tr>`;
-
+    for (let index = 0; index < currentPokemonAbilities.length; index++) {
+        let abilityName = currentPokemonAbilities[index]['ability']['name'];
+        let abilityDescription = getAbilityDescription(abilityName);
+        html += `<tr><td id='ability'>${abilityName.toUpperCase()}</td><td>${abilityDescription}</td></tr>`;
     }
     html += `</table></div>`;
     return html;
@@ -61,17 +56,29 @@ async function getStats() {
     return [statNames, statValues];
 }
 
-function getAbilityDescription(abilityData) {
-    let abilityDescription = "";
+function getAbilityDescription(abilityName) {
+    console.log(abilityName);
+    console.log(abilityData);
     //german and englisch texts are mixed up in array indexes
     effectEntries = abilityData[1]['effect_entries'];
-    for (let index = 0; index < effectEntries.length; index++) {
-        const effectEntry = effectEntries[index];
-        if (effectEntry['language']['name'] == "en") {
+        
+    let abilityDescription = "";
+    //abilityDescription=getEnglishDescription(found,"en");
+
+    return abilityDescription;
+}
+
+function getAbilityId(abilityName){
+    
+}
+
+function getEnglishDescription(abilityData,languageCode){
+    for (let index = 0; index < abilityData.length; index++) {
+        const effectEntry = abilityData[index];
+        if (effectEntry['language']['name'] == languageCode) {
             abilityDescription = effectEntry['effect'];
         }
     }
-    return abilityDescription;
 }
 
 function getDataSet(stats) {
@@ -211,7 +218,7 @@ async function setPokemonBodyValues() {
     informationContainer.innerHTML = getPokemonAttributeMenu();
     switch (selectedBodyType) {
         case 'abilities':
-            informationContainer.innerHTML += await getAbilities(pokemonData);
+            informationContainer.innerHTML += await getAbilities(selectedPokemon);
             break;
         case 'stats':
             informationContainer.innerHTML += `<div class="chart-container">
@@ -221,7 +228,7 @@ async function setPokemonBodyValues() {
             visualizeStats(stats);
             break;
         default:
-            informationContainer.innerHTML += await getAbilities(pokemonData);
+            informationContainer.innerHTML += await getAbilities(selectedPokemon);
     }
 }
 
@@ -232,10 +239,8 @@ async function setSelectedBodyType(typeName) {
 
 
 async function renderPokemonGrid() {
-    console.log(pokemonData.length);
     for (let index = 0; index < pokemonData.length; index++) {
         let currentPokemonData = pokemonData[index];
-        console.log(currentPokemonData+"test");
         await renderPokemonGridItemLayout(index);
         await setPokemonHeadValues(index, currentPokemonData);
     }

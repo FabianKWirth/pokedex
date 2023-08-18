@@ -1,7 +1,10 @@
 let pokemonAmount = null;
 let pokemonData = [];
 let abilityData = [];
+let loadedAbilityNamesById = [];
+let abilityIdNameAssignment = [];
 let pokemonSetUrl = "https://pokeapi.co/api/v2/pokemon/";
+
 
 
 async function loadPokemons() {
@@ -20,7 +23,7 @@ function endLoadingAnimation() {
 
 async function fetchPokemonData() {
     try {
-        let response = await fetch(pokemonSetUrl);
+        let response = await fetch (pokemonSetUrl);
         let thisPokemonData = await response.json();
         pokemonSetUrl = thisPokemonData['next'];
         await savePokemonDataToGlobalArray(thisPokemonData['results']);
@@ -30,25 +33,41 @@ async function fetchPokemonData() {
 }
 
 async function savePokemonDataToGlobalArray(pokemonDataResults) {
-    for (let index = 0; index < pokemonDataResults.length; index++) {
-        const element = pokemonDataResults[index];
-        let pokemonValues = await getPokemonValues(element['url']);
-        await savePokemonValues(index, pokemonValues);
+    for (let pokemonIndex = 0; pokemonIndex < pokemonDataResults.length; pokemonIndex++) {
+        const pokemonData = pokemonDataResults[pokemonIndex];
+        let pokemonValues = await getPokemonValues(pokemonData['url']);
 
-        await loadAbilities(pokemonValues);
+        /*
+        ensures, that all the abilities are loaded as well and adds an index to the 
+        pokemons ability array to directly access the array of the preloaded abilities
+        */
+        let adaptedPokemonValues = await loadAbilities(pokemonValues);
 
-
+        await savePokemonValues(pokemonIndex, adaptedPokemonValues);
     }
 }
 
 async function loadAbilities(pokemonValues) {
-    let unloadedAbilities = await getUnloadedAbilities(pokemonValues);
-    for (let index = 0; index < unloadedAbilities.length; index++) {
-        let name = unloadedAbilities[index]['name'];
-        let abilityData = await getAbility(unloadedAbilities[index]['url']);
-        await saveAbility(name, abilityData);
+    let abilities = pokemonValues['abilities'];
+    let adaptedPokemonValues=pokemonValues;
+
+    for (let index = 0; index < abilities.length; index++) {
+        let abilityName = abilities[index]['ability']['name'];
+        let abilityId = await getIndexOfAlreadyLoadedAbility(abilityName);
+        if (abilityId == false) {
+            console.log(abilityId);
+            let abilityData = await getAbility(abilities[index]['ability']['url']);
+            abilityId = abilityData['id'];
+            await saveAbility(abilityId,abilityName, abilityData);
+        }
+
+        adaptedPokemonValues = await saveAbilityReferenceInPokemonData(pokemonValues, index, abilityId);
     }
+
+    return adaptedPokemonValues;
 }
+
+
 
 async function getAbility(url) {
     let response = await fetch(url);
@@ -56,39 +75,22 @@ async function getAbility(url) {
     return currentAbility;
 }
 
-async function saveAbility(name, data) {
-    var newJsonObject = { "name": name, "data": data };
-    await abilityData.push(newJsonObject);
+async function saveAbilityReferenceInPokemonData(pokemonValues, index, abilityId) {
+    pokemonValues['abilities'][index]['ability']['id']=abilityId;
 }
 
-async function getUnloadedAbilities(pokemonValues) {
-    let pokemonAbilities = pokemonValues['abilities'];
-    i = 0;
-    unloadedAbilities = [];
-    for (let index = 0; index < pokemonAbilities.length; index++) {
-        const thisAbility = pokemonAbilities[index];
-        if (await abilityIsLoaded(thisAbility['ability']['name']) == false) {
-            abilityValues = { name: thisAbility['ability']['name'], url: thisAbility['ability']['url'] }
-            unloadedAbilities.push(abilityValues);
-            i++;
-        }
-    }
-    return unloadedAbilities;
+async function saveAbility(id,name, data) {
+    abilityData[id] = data;
+    loadedAbilityNamesById[id]=name;
 }
 
-function abilityIsLoaded(thisAbilityName) {
-    var hasMatch = false;
-
-    for (var index = 0; index < abilityData.length; index++) {
-
-        var ability = abilityData[index];
-
-        if (ability.name == thisAbilityName) {
-            hasMatch = true;
-            break;
-        }
+function getIndexOfAlreadyLoadedAbility(thisAbilityName) {
+    let index = loadedAbilityNamesById.indexOf(thisAbilityName);
+    if (index == -1) {
+        return false;
+    } else {
+        return index;
     }
-    return hasMatch;
 }
 
 async function getPokemonValues(url) {
@@ -99,7 +101,7 @@ async function getPokemonValues(url) {
 }
 
 async function savePokemonValues(index, values) {
-     pokemonData[index] = values;
+    pokemonData[index] = values;
 }
 
 function loadAbility(abilityName) {
