@@ -4,6 +4,7 @@ let selectedBodyType = null;
 async function init() {
     await loadPokemons();
     await renderPokemonGrid();
+    console.log(pokemonData);
     console.log(abilityIdNameAssignment);
 }
 
@@ -69,7 +70,7 @@ function getAbilityDescription(abilityName) {
 }
 
 function getAbilityId(abilityName){
-    
+
 }
 
 function getEnglishDescription(abilityData,languageCode){
@@ -160,7 +161,9 @@ async function setPokemonAllValues() {
 
 
 function setPokemonHeadValues(index, isSelectedPokemon = false) {
+    console.log(pokemonData);
     const currentPokemonData = pokemonData[index];
+    console.log(currentPokemonData);
     if (isSelectedPokemon == true) {
         setImg(index, currentPokemonData["sprites"]["other"]["home"]["front_default"]);
         setBackgroundColor("selectedPokemonHeader", currentPokemonData["types"]);

@@ -55,7 +55,6 @@ async function loadAbilities(pokemonValues) {
         let abilityName = abilities[index]['ability']['name'];
         let abilityId = await getIndexOfAlreadyLoadedAbility(abilityName);
         if (abilityId == false) {
-            console.log(abilityId);
             let abilityData = await getAbility(abilities[index]['ability']['url']);
             abilityId = abilityData['id'];
             await saveAbility(abilityId,abilityName, abilityData);
@@ -63,7 +62,6 @@ async function loadAbilities(pokemonValues) {
 
         adaptedPokemonValues = await saveAbilityReferenceInPokemonData(pokemonValues, index, abilityId);
     }
-
     return adaptedPokemonValues;
 }
 
@@ -77,6 +75,7 @@ async function getAbility(url) {
 
 async function saveAbilityReferenceInPokemonData(pokemonValues, index, abilityId) {
     pokemonValues['abilities'][index]['ability']['id']=abilityId;
+    return pokemonValues;
 }
 
 async function saveAbility(id,name, data) {
