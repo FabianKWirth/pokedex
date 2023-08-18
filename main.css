@@ -64,6 +64,9 @@ h1 {
     cursor: pointer;
 }
 
+.hide{
+    display: none;
+}
 
 .invert {
     filter: invert(1);
