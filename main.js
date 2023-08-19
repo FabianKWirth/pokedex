@@ -12,7 +12,6 @@ async function increasePokemonPool() {
     await renderPokemonGrid();
 }
 
-
 async function selectPokemon(index) {
     selectedPokemon = index;
     await renderSelectedPokemon();
@@ -141,7 +140,7 @@ function getSelectedPokemonHeaderLayout() {
     <div class='pokemon-header' id='selectedPokemonHeader'>
         <div class='pokemon-header-menu w-75'>
             <img class='icon' src='./icons/arrow-back.png' onclick="unsetCurrentPokemon()">
-            <img class='icon' src='./icons/heart.png'>
+            <img class='icon' id='heart${index}' onclick='updateIcon(${index})' src='./icons/heart.png'>
         </div>
         <div class='d-flex justify-content-between align-items-baseline w-75'>
         <h2 id='pokemonName${index}'></h2>
@@ -364,6 +363,36 @@ function removeAnimation(pokemonId) {
     setTimeout(function () {
         document.getElementById(pokemonId).classList.remove('animate');
     }, 1000);
+}
+
+function setPreferedPokemonIcons(){
+    for (let index = 0; index < preferedPokemons.length; index++) {
+        iconId="heart"+preferedPokemons[index];
+        document.getElementById(iconId).src='./icons/heart-filled.png';
+    }
+}
+
+function setPokemonPrefered(pokemonId){
+    preferedPokemons.push(pokemonId);
+}
+
+function unsetPokemonPrefered(pokemonId){
+    index=preferedPokemons.indexOf(pokemonId);
+    preferedPokemons.splice(index,1);
+}
+
+function updateIcon(pokemonId){
+    let iconId="heart"+pokemonId;
+    if(document.getElementById(iconId).name=='heartFilled'){
+        document.getElementById(iconId).src='/icons/heart.png';
+        document.getElementById(iconId).name='heartEmpty';
+        unsetPokemonPrefered(pokemonId)
+    }else{
+        document.getElementById(iconId).src='/icons/heart-filled.png';
+        document.getElementById(iconId).name='heartFilled';
+        setPokemonPrefered(pokemonId);
+    }
+    console.log(preferedPokemons);
 }
 
 
