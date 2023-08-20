@@ -1,6 +1,7 @@
 let selectedPokemon = null;
 let selectedBodyType = null;
 let maxRenderedPokemonIndex = 0;
+currentOutputGrid='standardGrid'; //alternativ is searchResultGrid
 
 async function init() {
     await loadPokemons();
@@ -10,6 +11,28 @@ async function init() {
 async function increasePokemonPool() {
     await loadPokemons();
     await renderPokemonGrid();
+}
+
+async function searchPokemon(){
+    startLoadingAnimation();
+    searchInput=document.getElementById('searchInput').value.toLowerCase();
+    let pokemonDataOfSearch=await getPokemonsOfSearch(searchInput);
+    currentOutputGrid='searchResultGrid';
+    await emptyGrid();
+    console.log(pokemonDataOfSearch);
+    await renderSearchResultGrid(pokemonDataOfSearch);
+    endLoadingAnimation();
+}
+
+function showCurrentOutputGrid(){
+    if(currentOutputGrid=='searchResultGrid'){
+        document.getElementById('searchResultGrid').classList.remove('hide');
+        document.getElementById('standardGrid').classList.add('hide');
+    }else if(currentOutputGrid=='standardGrid'){
+        document.getElementById('searchResultGrid').classList.remove('hide');
+        document.getElementById('standardGrid').classList.add('hide');
+
+    }
 }
 
 async function selectPokemon(index) {
@@ -136,11 +159,13 @@ function getSelectedPokemonBodyLayout() {
 
 function getSelectedPokemonHeaderLayout() {
     index = selectedPokemon;
+
+    let likedPokemonImgHtml= getLikedPokemonImgHtml(selectedPokemon);
     html = `
     <div class='pokemon-header' id='selectedPokemonHeader'>
         <div class='pokemon-header-menu w-75'>
             <img class='icon' src='./icons/arrow-back.png' onclick="unsetCurrentPokemon()">
-            <img class='icon' id='heart${index}' onclick='updateIcon(${index})' src='./icons/heart.png'>
+            ${likedPokemonImgHtml}
         </div>
         <div class='d-flex justify-content-between align-items-baseline w-75'>
         <h2 id='pokemonName${index}'></h2>
@@ -151,6 +176,16 @@ function getSelectedPokemonHeaderLayout() {
         <img id="pokemonImg${index}" class="pokemon-img-200">
     </div>`
     return html;
+}
+
+function getLikedPokemonImgHtml(selectedPokemon){
+    let img=`<img class='icon' id='heart${selectedPokemon}' name='heartEmpty' onclick='updateIcon(${selectedPokemon})' src='./icons/heart.png'>`;
+    
+    if(likedPokemons.includes(selectedPokemon)){
+        img=`<img class='icon' id='heart${selectedPokemon}' name='heartFilled' onclick='updateIcon(${selectedPokemon})' src='./icons/heart-filled.png'>`;
+    }
+
+    return img;
 }
 
 function getPokemonAttributeMenu() {
@@ -243,7 +278,6 @@ async function setSelectedBodyType(typeName) {
     setPokemonBodyValues();
 }
 
-
 async function renderPokemonGrid() {
     for (let index = maxRenderedPokemonIndex; index < pokemonData.length; index++) {
         let currentPokemonData = pokemonData[index];
@@ -253,7 +287,24 @@ async function renderPokemonGrid() {
     }
     renderLoadMorePokemon();
     maxRenderedPokemonIndex++;
-    
+}
+
+
+async function emptyGrid(){
+    document.getElementById("standardGrid").innerHTML="";
+    document.getElementById("searchResultGrid").innerHTML=""
+
+    maxRenderedPokemonIndex=0;
+}
+
+async function renderSearchResultGrid(searchResultData){
+    for (let index = 0; index < searchResultData.length; index++) {
+        let currentPokemonData = searchResultData[index];
+        console.log(currentPokemonData);
+        await renderPokemonGridItemLayout(index);
+        await setPokemonHeadValues(index, currentPokemonData);
+    }
+
 }
 
 function renderLoadMorePokemon() {
@@ -315,7 +366,7 @@ function stopEvent(event) {
     event.stopPropagation();
 }
 
-function renderPokemonGridItemLayout(index) {
+async function renderPokemonGridItemLayout(index) {
     html = `
     <div id="pokemon${index}" class='pokemon-grid-item-container' onclick="selectPokemon(${index});">
         <div class="d-flex justify-content-between align-items-baseline w-75">
@@ -327,7 +378,7 @@ function renderPokemonGridItemLayout(index) {
             <img id='pokemonImg${index}' class='pokemon-img' >
         </div>
      </div>`;
-    document.getElementById("pokedexGrid").innerHTML += html;
+    document.getElementById(currentOutputGrid).innerHTML += html;
 }
 
 function renderResetPageButton() {
@@ -365,34 +416,38 @@ function removeAnimation(pokemonId) {
     }, 1000);
 }
 
-function setPreferedPokemonIcons(){
-    for (let index = 0; index < preferedPokemons.length; index++) {
-        iconId="heart"+preferedPokemons[index];
-        document.getElementById(iconId).src='./icons/heart-filled.png';
+function setLikedPokemonIcon(){
+    for (let index = 0; index < likedPokemons.length; index++) {
+        pokemonId=likedPokemons[index];
+        iconId="heart"+pokemonId;
+        setPokemonLiked(pokemonId,iconId);
     }
 }
 
-function setPokemonPrefered(pokemonId){
-    preferedPokemons.push(pokemonId);
+function setPokemonLiked(pokemonId,iconId){
+    likedPokemons.push(pokemonId);
+    document.getElementById(iconId).src='/icons/heart-filled.png';
+    document.getElementById(iconId).name='heartFilled';
+    saveLikedPokemons();
 }
 
-function unsetPokemonPrefered(pokemonId){
-    index=preferedPokemons.indexOf(pokemonId);
-    preferedPokemons.splice(index,1);
+function unsetPokemonLiked(pokemonId,iconId){
+    index=likedPokemons.indexOf(pokemonId);
+    likedPokemons.splice(index,1);
+    document.getElementById(iconId).src='/icons/heart.png';
+    document.getElementById(iconId).name='heartEmpty';
+    saveLikedPokemons();
 }
 
 function updateIcon(pokemonId){
+    console.log("updateIcon");
     let iconId="heart"+pokemonId;
     if(document.getElementById(iconId).name=='heartFilled'){
-        document.getElementById(iconId).src='/icons/heart.png';
-        document.getElementById(iconId).name='heartEmpty';
-        unsetPokemonPrefered(pokemonId)
+        unsetPokemonLiked(pokemonId,iconId);
     }else{
-        document.getElementById(iconId).src='/icons/heart-filled.png';
-        document.getElementById(iconId).name='heartFilled';
-        setPokemonPrefered(pokemonId);
+        setPokemonLiked(pokemonId,iconId);
     }
-    console.log(preferedPokemons);
+    console.log(likedPokemons);
 }
 
 

@@ -102,9 +102,7 @@ h1 {
     animation: spin 1s linear infinite;
 }
 
-.hide {
-    display: none;
-}
+
 
 @keyframes spin {
     0% {
@@ -142,5 +140,9 @@ h1 {
         height: 48px;
         font-size: 24px;
     }
+}
+
+.hide {
+    display: none !important;
 }
 

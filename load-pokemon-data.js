@@ -10,22 +10,61 @@ let abilityData = [];
 let loadedAbilityNamesById = [];
 let abilityIdNameAssignment = [];
 
-let preferedPokemons = [];
+let likedPokemons = loadLikedPokemons();
 
-async function getSearchResult(searchInput) {
-    startLoadingAnimation();
-    let names = await loadAllPokemonNames();
-    let suitablePokemons = await getSuitablePokemons(searchInput, names);
 
-    for (let index = 0; index < suitablePokemons.length; index++) {
-        const suitablePokemon = suitablePokemons[index];
-    }
-    /*
-    let pokemonValues = await getPokemonValues(currentPokemonData['url']);
+let futurePokemonData=[];
+
+currentLoadedPokemonId=1;
+
+
+async function loadPokemonDataById(currentLoadedPokemonId) {
+    let pokemonValues = await getPokemonValues(await getPokemonDataUrl(currentLoadedPokemonId));
+
+    /* ensures, that all the abilities are loaded as well and adds an index to the 
+    pokemons ability array to directly access the array of the preloaded abilities */
     let adaptedPokemonValues = await loadAbilities(pokemonValues);
-    await savePokemonValues(pokemonIndex, adaptedPokemonValues);
-    */
-    endLoadingAnimation();
+    await savePokemonValues(currentLoadedPokemonId,adaptedPokemonValues);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+async function getPokemonsOfSearch(searchInput) {
+    await loadAllPokemonNames();
+    let suitablePokemons = await getSuitablePokemons(searchInput);
+    let pokemonDataOfSearch=[];
+    for (let index = 0; index < suitablePokemons.length; index++) {
+        let thisPokemonData=await getPokemonData(suitablePokemons[index]);
+        pokemonDataOfSearch.push(thisPokemonData);
+    }
+
+   return pokemonDataOfSearch;
+}
+
+async function getSuitablePokemons(searchInput){
+    foundPokemons=[];
+    for (let index = 0; index < loadedPokemonNames.length; index++) {
+        const pokemonName = loadedPokemonNames[index];
+        if(pokemonName.includes(searchInput)){
+            foundPokemons.push(pokemonName);
+        }
+    }
+    return foundPokemons;
 }
 
 async function loadAllPokemonNames() {
@@ -66,8 +105,8 @@ async function getPokemonDataUrl(pokemonName) {
 async function savePokemonNames(thisPokemonListValues) {
     for (let i = 0; i < thisPokemonListValues.length; i++) {
         loadedPokemonNames[loadedPokemonNameOffset]=thisPokemonListValues[i]['name'];
+        futurePokemonData[thisPokemonListValues[i]['name']]=[];
         loadedPokemonNameOffset++;
-
     }
 }
 
@@ -77,15 +116,11 @@ async function getPokemonList(url) {
     return thisPokemonList;
 }
 
-
-
 async function getAmountOfUnloadedNamesForNextDataFetch(amountToFetch) {
     let requiredAmount=loadedPokemonNameOffset-loadedPokemonDataOffset;
     if(requiredAmount<amountToFetch){
         amountToFetch=requiredAmount;
     }
-
-    console.log(amountToFetch);
 
     return 20;
 }
@@ -98,8 +133,8 @@ async function fetchPokemonData() {
         await fetchNextPokemonNames(amountOfUnloadedNames);
     }
 
-    while (amountToFetch > 1) {
-        let currentPokemonName = loadedPokemonNames[loadedPokemonDataOffset+1];
+    while (amountToFetch > 0) {
+        let currentPokemonName = loadedPokemonNames[loadedPokemonDataOffset];
         await loadPokemonData(currentPokemonName);
         amountToFetch--;
     }
@@ -108,12 +143,19 @@ async function fetchPokemonData() {
 async function loadPokemonData(pokemonName) {
     let pokemonValues = await getPokemonValues(await getPokemonDataUrl(pokemonName));
 
+    /* ensures, that all the abilities are loaded as well and adds an index to the 
+    pokemons ability array to directly access the array of the preloaded abilities */
+    let adaptedPokemonValues = await loadAbilities(pokemonValues);
+    await savePokemonValues(pokemonName,adaptedPokemonValues);
+}
+
+async function getPokemonData(pokemonName) {
+    let pokemonValues = await getPokemonValues(await getPokemonDataUrl(pokemonName));
 
     /* ensures, that all the abilities are loaded as well and adds an index to the 
     pokemons ability array to directly access the array of the preloaded abilities */
     let adaptedPokemonValues = await loadAbilities(pokemonValues);
-
-    await savePokemonValues(adaptedPokemonValues);
+    return adaptedPokemonValues;
 }
 
 async function loadAbilities(pokemonValues) {
@@ -128,7 +170,6 @@ async function loadAbilities(pokemonValues) {
             abilityId = abilityData['id'];
             await saveAbility(abilityId, abilityName, abilityData);
         }
-
         adaptedPokemonValues = await saveAbilityReferenceInPokemonData(pokemonValues, index, abilityId);
     }
     return adaptedPokemonValues;
@@ -166,17 +207,18 @@ async function getPokemonValues(url) {
     return currentPokemonData;
 }
 
-async function savePokemonValues(values) {
-    pokemonData[loadedPokemonDataOffset] = values;
+async function savePokemonValues(pokemonName,pokemonValues) {
+    pokemonData[loadedPokemonDataOffset] = pokemonValues;
+    futurePokemonData[pokemonName]=pokemonValues;
     loadedPokemonDataOffset++;
 
 }
 
-function loadAbility(abilityName) {
+async function loadAbility(abilityName) {
     if (abilities[abilityName]) {
         return abilities[abilityName];
     } else {
-        let abilityData = fetchAbilityData(abilities[abilityName]);
+        let abilityData = await fetchAbilityData(abilities[abilityName]);
         if (abilityData[0] == 'true') {
             return abilityData[1];
         }
@@ -195,18 +237,19 @@ async function fetchAbilityData(abilityName) {
 
 }
 
-
-
-function savePreferedPokemons(pokemonId) {
-
-
-    localStorage.setItem("myCat", "Tom");
+function saveLikedPokemons() {
+    likedPokemonsText=JSON.stringify(likedPokemons);
+    localStorage.setItem("likedPokemons", likedPokemonsText);
 }
 
-function loadPreferedPokemons() {
-
+function loadLikedPokemons() {
+    let likedPokemonsString=localStorage.getItem("likedPokemons");
+    if(likedPokemonsString){
+        return JSON.parse(likedPokemonsString);
+    }else{
+        return [];
+    }
 }
-
 
 function startLoadingAnimation() {
     document.getElementById("loadingContainer").classList.remove('hide');
