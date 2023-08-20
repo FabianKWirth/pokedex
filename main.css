@@ -49,6 +49,7 @@ h1 {
 .pokemon-img-200 {
     object-fit: cover;
     width: 200px;
+   
 }
 
 
@@ -86,11 +87,12 @@ h1 {
     right: 0;
     bottom: 0;
     z-index: 1000;
-    opacity: 0.3;
+    opacity: 0.6;
     background-color: white;
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
 }
 
 .spinner {

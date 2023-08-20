@@ -12,59 +12,36 @@ let abilityIdNameAssignment = [];
 
 let likedPokemons = loadLikedPokemons();
 
-
-let futurePokemonData=[];
-
-currentLoadedPokemonId=1;
-
-
-async function loadPokemonDataById(currentLoadedPokemonId) {
-    let pokemonValues = await getPokemonValues(await getPokemonDataUrl(currentLoadedPokemonId));
-
-    /* ensures, that all the abilities are loaded as well and adds an index to the 
-    pokemons ability array to directly access the array of the preloaded abilities */
-    let adaptedPokemonValues = await loadAbilities(pokemonValues);
-    await savePokemonValues(currentLoadedPokemonId,adaptedPokemonValues);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 async function getPokemonsOfSearch(searchInput) {
     await loadAllPokemonNames();
     let suitablePokemons = await getSuitablePokemons(searchInput);
     let pokemonDataOfSearch=[];
     for (let index = 0; index < suitablePokemons.length; index++) {
         let thisPokemonData=await getPokemonData(suitablePokemons[index]);
+        thisPokemonIndex=thisPokemonData['id'];
+        pokemonData[thisPokemonIndex-1]=thisPokemonData;
         pokemonDataOfSearch.push(thisPokemonData);
     }
-
    return pokemonDataOfSearch;
 }
 
 async function getSuitablePokemons(searchInput){
     foundPokemons=[];
-    for (let index = 0; index < loadedPokemonNames.length; index++) {
-        const pokemonName = loadedPokemonNames[index];
+    for (let index = 0; index < pokemonData.length & index<totalAmountOfPokemons; index++) {
+        const pokemonName = pokemonData[index]['name'];
+        
         if(pokemonName.includes(searchInput)){
             foundPokemons.push(pokemonName);
         }
+        setLoadingText("Searching...<br>"+foundPokemons.length+" Pokemon found");
     }
-    return foundPokemons;
+    if(foundPokemons.length>40){
+        alert("Your search request has "+foundPokemons.length+" fitting results. Please specify your search");
+        return 0;
+    }else{
+        return foundPokemons;
+    }
+    
 }
 
 async function loadAllPokemonNames() {
@@ -104,8 +81,11 @@ async function getPokemonDataUrl(pokemonName) {
 
 async function savePokemonNames(thisPokemonListValues) {
     for (let i = 0; i < thisPokemonListValues.length; i++) {
-        loadedPokemonNames[loadedPokemonNameOffset]=thisPokemonListValues[i]['name'];
-        futurePokemonData[thisPokemonListValues[i]['name']]=[];
+        //loadedPokemonNames[loadedPokemonNameOffset]=thisPokemonListValues[i]['name'];
+        
+        pokemonId=loadedPokemonNameOffset+1;
+        pokemonName={"name": thisPokemonListValues[i]['name']};
+        pokemonData[loadedPokemonNameOffset]=pokemonName;
         loadedPokemonNameOffset++;
     }
 }
@@ -128,30 +108,30 @@ async function getAmountOfUnloadedNamesForNextDataFetch(amountToFetch) {
 async function fetchPokemonData() {
     let amountToFetch = 20;
     amountOfUnloadedNames = await getAmountOfUnloadedNamesForNextDataFetch(amountToFetch);
-    console.log(amountOfUnloadedNames);
     if (amountOfUnloadedNames > 1) {
         await fetchNextPokemonNames(amountOfUnloadedNames);
     }
 
     while (amountToFetch > 0) {
-        let currentPokemonName = loadedPokemonNames[loadedPokemonDataOffset];
+        let currentPokemonName = pokemonData[loadedPokemonDataOffset]['name'];
         await loadPokemonData(currentPokemonName);
         amountToFetch--;
     }
 }
 
 async function loadPokemonData(pokemonName) {
+    setLoadingText("Lade Pokemon: "+pokemonName);
     let pokemonValues = await getPokemonValues(await getPokemonDataUrl(pokemonName));
-
+   
     /* ensures, that all the abilities are loaded as well and adds an index to the 
     pokemons ability array to directly access the array of the preloaded abilities */
     let adaptedPokemonValues = await loadAbilities(pokemonValues);
-    await savePokemonValues(pokemonName,adaptedPokemonValues);
+    await savePokemonValues(adaptedPokemonValues);
 }
 
 async function getPokemonData(pokemonName) {
+    setLoadingText("Lade Pokemon: "+pokemonName);
     let pokemonValues = await getPokemonValues(await getPokemonDataUrl(pokemonName));
-
     /* ensures, that all the abilities are loaded as well and adds an index to the 
     pokemons ability array to directly access the array of the preloaded abilities */
     let adaptedPokemonValues = await loadAbilities(pokemonValues);
@@ -201,15 +181,13 @@ function getIndexOfAlreadyLoadedAbility(thisAbilityName) {
 }
 
 async function getPokemonValues(url) {
-    console.log(url);
     let response = await fetch(url);
     let currentPokemonData = await response.json();
     return currentPokemonData;
 }
 
-async function savePokemonValues(pokemonName,pokemonValues) {
-    pokemonData[loadedPokemonDataOffset] = pokemonValues;
-    futurePokemonData[pokemonName]=pokemonValues;
+async function savePokemonValues(values) {
+    pokemonData[loadedPokemonDataOffset] = values;
     loadedPokemonDataOffset++;
 
 }

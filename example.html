@@ -4,49 +4,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
     <title>Loading Animation</title>
 </head>
-<style>
-    body {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-        background-color: #f0f0f0;
-    }
-
-    .loading-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .spinner {
-        width: 50px;
-        height: 50px;
-        border: 4px solid rgba(0, 0, 0, 0.1);
-        border-top: 4px solid #3498db;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-        0% {
-            transform: rotate(0deg);
-        }
-
-        100% {
-            transform: rotate(360deg);
-        }
-    }
-</style>
 
 <body>
-    <div class="loading-container">
-        <div class="spinner"></div>
+    <div name="test">
+        <div name="test">ss</div>
     </div>
-</body>
 
+    
+</body>
+<script>
+    document.getElementsByName('test');
+</script>
 </html>

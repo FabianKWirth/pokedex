@@ -1,4 +1,4 @@
-.pokedex {
+.pokedex-grid {
     color: rgb(0, 0, 0);
     display: flex;
     justify-content: center;
@@ -34,12 +34,17 @@
     /* (105% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
 }
 
+.pokemon-img{
+    filter: drop-shadow(2px 2px 2px black);
+}
+
 .pokemon-types {
     display: flex;
     gap: 2px;
     color: black;
     flex-wrap: wrap;
 }
+
 
 @media only screen and (max-width: 300px) {
     .pokemon-grid-item-container {
