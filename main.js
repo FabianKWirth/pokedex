@@ -18,10 +18,7 @@ async function searchPokemon() {
     let searchInput = await getSearchInput();
     if (searchInput != null) {
         let pokemonDataOfSearch = await getPokemonsOfSearch(searchInput);
-        console.log(pokemonDataOfSearch);
-        if (pokemonDataOfSearch.length == 0) {
-            alert(`No pokemons were found for the search input: "${searchInput}"`)
-        } else {
+        if (pokemonDataOfSearch.length != 0) {
             setPokemonGrid('searchResultGrid');
             emptySearchGrid();
             await renderPokemonSearchGrid(pokemonDataOfSearch);
@@ -348,7 +345,6 @@ async function setSelectedBodyType(typeName) {
 }
 
 async function renderPokemonSearchGrid(pokemonDataOfSearch) {
-    console.log(pokemonDataOfSearch);
     for (let index = 0; index < pokemonDataOfSearch.length; index++) {
         let currentPokemonData = pokemonDataOfSearch[index];
         currentOutputGrid = 'searchResultGrid';
@@ -515,14 +511,12 @@ function unsetPokemonLiked(pokemonId, iconId) {
 }
 
 function updateIcon(pokemonId) {
-    console.log("updateIcon");
     let iconId = "heart" + pokemonId;
     if (document.getElementById(iconId).name == 'heartFilled') {
         unsetPokemonLiked(pokemonId, iconId);
     } else {
         setPokemonLiked(pokemonId, iconId);
     }
-    console.log(likedPokemons);
 }
 
 

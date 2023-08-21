@@ -26,13 +26,15 @@ async function getPokemonsOfSearch(searchInput) {
 }
 
 async function getSuitablePokemons(searchInput) {
-
     foundPokemons= await searchForPokemons(searchInput);
     
     if (foundPokemons.length > 50) {
         alert("Your search request has " + foundPokemons.length + " fitting results. Please specify your search.");
         return 0;
-    } else {
+    }else if (foundPokemons.length == 0) {
+        alert(`No pokemons were found for the search input: "${searchInput}"`);
+        return 0;
+    }  else {
         return foundPokemons;
     }
 }
