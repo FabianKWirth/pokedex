@@ -215,10 +215,4 @@ function loadLikedPokemons() {
     }
 }
 
-function startLoadingAnimation() {
-    document.getElementById("loadingContainer").classList.remove('hide');
-}
 
-function endLoadingAnimation() {
-    document.getElementById("loadingContainer").classList.add('hide');
-}
