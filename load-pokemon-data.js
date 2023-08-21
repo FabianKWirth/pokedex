@@ -15,33 +15,33 @@ let likedPokemons = loadLikedPokemons();
 async function getPokemonsOfSearch(searchInput) {
     await loadAllPokemonNames();
     let suitablePokemons = await getSuitablePokemons(searchInput);
-    let pokemonDataOfSearch=[];
+    let pokemonDataOfSearch = [];
     for (let index = 0; index < suitablePokemons.length; index++) {
-        let thisPokemonData=await getPokemonData(suitablePokemons[index]);
-        thisPokemonIndex=thisPokemonData['id'];
-        pokemonData[thisPokemonIndex-1]=thisPokemonData;
+        let thisPokemonData = await getPokemonData(suitablePokemons[index]);
+        thisPokemonIndex = thisPokemonData['id'];
+        pokemonData[thisPokemonIndex - 1] = thisPokemonData;
         pokemonDataOfSearch.push(thisPokemonData);
     }
-   return pokemonDataOfSearch;
+    return pokemonDataOfSearch;
 }
 
-async function getSuitablePokemons(searchInput){
-    foundPokemons=[];
-    for (let index = 0; index < pokemonData.length & index<totalAmountOfPokemons; index++) {
+async function getSuitablePokemons(searchInput) {
+    foundPokemons = [];
+    for (let index = 0; index < pokemonData.length & index < totalAmountOfPokemons; index++) {
         const pokemonName = pokemonData[index]['name'];
-        
-        if(pokemonName.includes(searchInput)){
+
+        if (pokemonName.includes(searchInput)) {
             foundPokemons.push(pokemonName);
         }
-        setLoadingText("Searching...<br>"+foundPokemons.length+" Pokemon found");
+        setLoadingText("Searching...<br>" + foundPokemons.length + " Pokemon found");
     }
-    if(foundPokemons.length>40){
-        alert("Your search request has "+foundPokemons.length+" fitting results. Please specify your search");
+    if (foundPokemons.length > 40) {
+        alert("Your search request has " + foundPokemons.length + " fitting results. Please specify your search");
         return 0;
-    }else{
+    } else {
         return foundPokemons;
     }
-    
+
 }
 
 async function loadAllPokemonNames() {
@@ -82,10 +82,10 @@ async function getPokemonDataUrl(pokemonName) {
 async function savePokemonNames(thisPokemonListValues) {
     for (let i = 0; i < thisPokemonListValues.length; i++) {
         //loadedPokemonNames[loadedPokemonNameOffset]=thisPokemonListValues[i]['name'];
-        
-        pokemonId=loadedPokemonNameOffset+1;
-        pokemonName={"name": thisPokemonListValues[i]['name']};
-        pokemonData[loadedPokemonNameOffset]=pokemonName;
+
+        pokemonId = loadedPokemonNameOffset + 1;
+        pokemonName = { "name": thisPokemonListValues[i]['name'] };
+        pokemonData[loadedPokemonNameOffset] = pokemonName;
         loadedPokemonNameOffset++;
     }
 }
@@ -97,9 +97,9 @@ async function getPokemonList(url) {
 }
 
 async function getAmountOfUnloadedNamesForNextDataFetch(amountToFetch) {
-    let requiredAmount=loadedPokemonNameOffset-loadedPokemonDataOffset;
-    if(requiredAmount<amountToFetch){
-        amountToFetch=requiredAmount;
+    let requiredAmount = loadedPokemonNameOffset - loadedPokemonDataOffset;
+    if (requiredAmount < amountToFetch) {
+        amountToFetch = requiredAmount;
     }
 
     return 20;
@@ -120,9 +120,9 @@ async function fetchPokemonData() {
 }
 
 async function loadPokemonData(pokemonName) {
-    setLoadingText("Lade Pokemon: "+pokemonName);
+    setLoadingText("Loading pokemon: " + pokemonName);
     let pokemonValues = await getPokemonValues(await getPokemonDataUrl(pokemonName));
-   
+
     /* ensures, that all the abilities are loaded as well and adds an index to the 
     pokemons ability array to directly access the array of the preloaded abilities */
     let adaptedPokemonValues = await loadAbilities(pokemonValues);
@@ -130,7 +130,7 @@ async function loadPokemonData(pokemonName) {
 }
 
 async function getPokemonData(pokemonName) {
-    setLoadingText("Lade Pokemon: "+pokemonName);
+    setLoadingText("Loading pokemon: " + pokemonName);
     let pokemonValues = await getPokemonValues(await getPokemonDataUrl(pokemonName));
     /* ensures, that all the abilities are loaded as well and adds an index to the 
     pokemons ability array to directly access the array of the preloaded abilities */
@@ -144,15 +144,23 @@ async function loadAbilities(pokemonValues) {
 
     for (let index = 0; index < abilities.length; index++) {
         let abilityName = abilities[index]['ability']['name'];
-        let abilityId = await getIndexOfAlreadyLoadedAbility(abilityName);
-        if (abilityId == false) {
-            let abilityData = await getAbility(abilities[index]['ability']['url']);
-            abilityId = abilityData['id'];
-            await saveAbility(abilityId, abilityName, abilityData);
-        }
+        let abilityUrl = abilities[index]['ability']['url']
+
+        abilityId = await loadAbility(abilityName, abilityUrl);
+
         adaptedPokemonValues = await saveAbilityReferenceInPokemonData(pokemonValues, index, abilityId);
     }
     return adaptedPokemonValues;
+}
+
+async function loadAbility(abilityName,abilityUrl,pokemonValues) {
+    let abilityId = await getIndexOfAlreadyLoadedAbility(abilityName);
+    if (abilityId == false) {
+        let abilityData = await getAbility(abilityUrl);
+        abilityId= abilityData['id'];
+        await saveAbility(abilityId, abilityName, abilityData);
+    }
+    return abilityId;
 }
 
 async function getAbility(url) {
@@ -192,17 +200,6 @@ async function savePokemonValues(values) {
 
 }
 
-async function loadAbility(abilityName) {
-    if (abilities[abilityName]) {
-        return abilities[abilityName];
-    } else {
-        let abilityData = await fetchAbilityData(abilities[abilityName]);
-        if (abilityData[0] == 'true') {
-            return abilityData[1];
-        }
-    }
-}
-
 async function fetchAbilityData(abilityName) {
     try {
         let urlAbility = `https://pokeapi.co/api/v2/ability/${abilityName}`;
@@ -216,15 +213,15 @@ async function fetchAbilityData(abilityName) {
 }
 
 function saveLikedPokemons() {
-    likedPokemonsText=JSON.stringify(likedPokemons);
+    likedPokemonsText = JSON.stringify(likedPokemons);
     localStorage.setItem("likedPokemons", likedPokemonsText);
 }
 
 function loadLikedPokemons() {
-    let likedPokemonsString=localStorage.getItem("likedPokemons");
-    if(likedPokemonsString){
+    let likedPokemonsString = localStorage.getItem("likedPokemons");
+    if (likedPokemonsString) {
         return JSON.parse(likedPokemonsString);
-    }else{
+    } else {
         return [];
     }
 }

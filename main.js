@@ -38,9 +38,11 @@ function setPokemonGrid(currentGrid) {
     if (currentOutputGrid == 'searchResultGrid') {
         defaultGrid.classList.add('hide');
         searchResultGrid.classList.remove('hide');
+        renderGotoDefaultGridButton();
     } else if (currentOutputGrid == 'defaultGrid') {
         defaultGrid.classList.remove('hide');
         searchResultGrid.classList.add('hide');
+        renderLoadMorePokemon();
     }
 }
 
@@ -68,7 +70,7 @@ async function getAbilities(pokemonId) {
     html = `<div class='abilities'><h3>Abilities</h3>
     <table class='abilities-table'><thead><th>Name</th><th>Description</th></thead>`;
     for (let index = 0; index < currentPokemonAbilities.length; index++) {
-        html += getSingleAbility(currentPokemonAbilities[index])
+        html += await getSingleAbility(currentPokemonAbilities[index])
 
 
     }
@@ -76,10 +78,10 @@ async function getAbilities(pokemonId) {
     return html;
 }
 
-function getSingleAbility(ability) {
+async function getSingleAbility(ability) {
     let abilityId = ability['ability']['id'];
     let abilityName = ability['ability']['name'];
-    let abilityDescription = getAbilityDescription(abilityId);
+    let abilityDescription = await getAbilityDescription(abilityId);
     return `<tr><td id='ability'>${abilityName.toUpperCase()}</td><td>${abilityDescription}</td></tr>`;
 }
 
@@ -95,11 +97,11 @@ async function getStats() {
     return [statNames, statValues];
 }
 
-function getAbilityDescription(abilityId) {
-    let abilityData = getAbilityData(abilityId);
+async function getAbilityDescription(abilityId) {
+    let abilityData = await getAbilityData(abilityId);
     //german and englisch texts are mixed up in array indexes
     let effectEntries = abilityData['effect_entries'];
-    abilityDescription = getAbilityDescriptionText(effectEntries, "en");
+    abilityDescription = await getAbilityDescriptionText(effectEntries, "en");
 
     return abilityDescription;
 }
@@ -108,7 +110,7 @@ function getAbilityData(abilityId) {
     return abilityData[abilityId];
 }
 
-function getAbilityDescriptionText(effectEntries, languageCode) {
+async function getAbilityDescriptionText(effectEntries, languageCode) {
     abilityDescription = "";
     for (let index = 0; index < effectEntries.length; index++) {
         const effectEntry = effectEntries[index];
@@ -329,7 +331,6 @@ async function renderPokemonSearchGrid(pokemonDataOfSearch) {
         await renderPokemonGridItemLayout(pokemonIndex);
         await setPokemonHeadValues(pokemonIndex, false, currentPokemonData);
     }
-    renderGotoDefaultGridButton();
 }
 
 async function renderPokemonGrid() {
