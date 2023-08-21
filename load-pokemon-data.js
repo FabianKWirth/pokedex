@@ -26,29 +26,34 @@ async function getPokemonsOfSearch(searchInput) {
 }
 
 async function getSuitablePokemons(searchInput) {
-    foundPokemons = [];
+
+    foundPokemons= await searchForPokemons(searchInput);
+    
+    if (foundPokemons.length > 50) {
+        alert("Your search request has " + foundPokemons.length + " fitting results. Please specify your search.");
+        return 0;
+    } else {
+        return foundPokemons;
+    }
+}
+
+async function searchForPokemons(searchInput){
+    foundPokemons=[];
     for (let index = 0; index < pokemonData.length & index < totalAmountOfPokemons; index++) {
         const pokemonName = pokemonData[index]['name'];
-
         if (pokemonName.includes(searchInput)) {
             foundPokemons.push(pokemonName);
         }
         setLoadingText("Searching...<br>" + foundPokemons.length + " Pokemon found");
     }
-    if (foundPokemons.length > 40) {
-        alert("Your search request has " + foundPokemons.length + " fitting results. Please specify your search");
-        return 0;
-    } else {
-        return foundPokemons;
-    }
-
+    return foundPokemons;
 }
 
 async function loadAllPokemonNames() {
+    setLoadingText('Loading all pokemon names');
     while (loadedPokemonNameOffset < totalAmountOfPokemons) {
         await fetchNextPokemonNames(limit = 100);
     }
-
 }
 
 async function loadPokemons() {
@@ -58,7 +63,6 @@ async function loadPokemons() {
 }
 
 async function fetchNextPokemonNames(limit) {
-    //required onload to implement the search function
     let url = await getPokemonListUrl(limit);
 
     thisPokemonList = await getPokemonList(url);
@@ -81,9 +85,6 @@ async function getPokemonDataUrl(pokemonName) {
 
 async function savePokemonNames(thisPokemonListValues) {
     for (let i = 0; i < thisPokemonListValues.length; i++) {
-        //loadedPokemonNames[loadedPokemonNameOffset]=thisPokemonListValues[i]['name'];
-
-        pokemonId = loadedPokemonNameOffset + 1;
         pokemonName = { "name": thisPokemonListValues[i]['name'] };
         pokemonData[loadedPokemonNameOffset] = pokemonName;
         loadedPokemonNameOffset++;
@@ -101,7 +102,6 @@ async function getAmountOfUnloadedNamesForNextDataFetch(amountToFetch) {
     if (requiredAmount < amountToFetch) {
         amountToFetch = requiredAmount;
     }
-
     return 20;
 }
 
@@ -197,19 +197,6 @@ async function getPokemonValues(url) {
 async function savePokemonValues(values) {
     pokemonData[loadedPokemonDataOffset] = values;
     loadedPokemonDataOffset++;
-
-}
-
-async function fetchAbilityData(abilityName) {
-    try {
-        let urlAbility = `https://pokeapi.co/api/v2/ability/${abilityName}`;
-        let response = await fetch(urlAbility);
-        let abilityData = await response.json();
-        return [true, abilityData];
-    } catch (e) {
-        return [false, e];
-    }
-
 }
 
 function saveLikedPokemons() {

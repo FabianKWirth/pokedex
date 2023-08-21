@@ -15,12 +15,32 @@ async function increasePokemonPool() {
 
 async function searchPokemon() {
     startLoadingAnimation();
-    searchInput = document.getElementById('searchInput').value.toLowerCase();
-    let pokemonDataOfSearch = await getPokemonsOfSearch(searchInput);
-    setPokemonGrid('searchResultGrid');
-    emptySearchGrid();
-    await renderPokemonSearchGrid(pokemonDataOfSearch);
+    let searchInput = await getSearchInput();
+    if (searchInput != null) {
+        let pokemonDataOfSearch = await getPokemonsOfSearch(searchInput);
+        console.log(pokemonDataOfSearch);
+        if (pokemonDataOfSearch.length == 0) {
+            alert(`No pokemons were found for the search input: "${searchInput}"`)
+        } else {
+            setPokemonGrid('searchResultGrid');
+            emptySearchGrid();
+            await renderPokemonSearchGrid(pokemonDataOfSearch);
+        }
+    }
     endLoadingAnimation();
+}
+
+async function getSearchInput() {
+    let searchInput = document.getElementById('searchInput').value.toLowerCase();
+
+    if (searchInput == "") {
+        alert("Please insert a search term");
+        return null;
+    } else {
+        return searchInput;
+    }
+
+
 }
 
 function emptySearchGrid() {
@@ -102,7 +122,6 @@ async function getAbilityDescription(abilityId) {
     //german and englisch texts are mixed up in array indexes
     let effectEntries = abilityData['effect_entries'];
     abilityDescription = await getAbilityDescriptionText(effectEntries, "en");
-
     return abilityDescription;
 }
 
@@ -178,7 +197,7 @@ async function getSelectedPokemonHeaderLayout() {
             ${likedPokemonImgHtml}
         </div>
         <div class='d-flex justify-content-between align-items-baseline w-75'>
-        <h2 name='selectedPokemonName${index}'></h2>
+        <h2 name='pokemonName${index}'></h2>
         <div name='pokemonId${index}' class='pokemon-id align-bottom'></div>
         </div>
         <div name="selectedPokemonTypes${index}" class="pokemon-types d-flex justify-content-start w-75">
@@ -194,16 +213,16 @@ function getLikedPokemonImgHtml(selectedPokemon) {
     if (likedPokemons.includes(selectedPokemon)) {
         img = `<img class='icon' id='heart${selectedPokemon}' name='heartFilled' onclick='updateIcon(${selectedPokemon})' src='./icons/heart-filled.png'>`;
     }
-
     return img;
 }
 
 function getPokemonAttributeMenu() {
-    return `
+    return html = `
     <div class="btn-group pokemon-attribute-menu" role="group">
         <button type="button menu-button" class="btn btn-secondary" onclick='setSelectedBodyType(\"abilities\")'>Abilities</button>
         <button type="button menu-button" class="btn btn-secondary" onclick='setSelectedBodyType(\"stats\")'>Stats</button>
     </div>`;
+    return html;
 }
 
 async function setPokemonAllValues() {
@@ -212,12 +231,8 @@ async function setPokemonAllValues() {
 }
 
 async function setPokemonHeadValues(index, isSelectedPokemon = false, specificPokemonData) {
-    let currentPokemonData = null;
-    if (specificPokemonData == null) {
-        currentPokemonData = pokemonData[index];
-    } else {
-        currentPokemonData = specificPokemonData;
-    }
+    let currentPokemonData = await getCurrentPokemonData(index, specificPokemonData);
+
     if (isSelectedPokemon == true) {
         setSelectedPokemonImg(index, currentPokemonData);
         setBackgroundColor("selectedPokemonHeader", currentPokemonData["types"]);
@@ -228,6 +243,16 @@ async function setPokemonHeadValues(index, isSelectedPokemon = false, specificPo
     setName(index, currentPokemonData["name"]);
     setId(index);
     setTypes(index, currentPokemonData["types"]);
+}
+
+async function getCurrentPokemonData(index, specificPokemonData) {
+    let currentPokemonData = null;
+    if (specificPokemonData == null) {
+        currentPokemonData = pokemonData[index];
+    } else {
+        currentPokemonData = specificPokemonData;
+    }
+    return currentPokemonData;
 }
 
 function setSelectedPokemonImg(index, currentPokemonData) {
@@ -388,15 +413,15 @@ async function renderSelectedPokemonLayout() {
     html = `
         <div id='pokemonElements' class='pokemon-elements animate w-100 overflow-y-scroll position-fixed' onclick='unsetCurrentPokemon()'>
             <div id='currentSelectedPokemon' class='current-selected-pokemon'>`+
-            await getSelectedPokemonHeaderLayout(selectedPokemon)
-            + await getSelectedPokemonBodyLayout();
-            if (currentOutputGrid == 'defaultGrid') {
-                html +=
-                `<nav class='change-pokemon-menu' id='changePokemonMenu'>
+        await getSelectedPokemonHeaderLayout(selectedPokemon)
+        + await getSelectedPokemonBodyLayout();
+    if (currentOutputGrid == 'defaultGrid') {
+        html +=
+            `<nav class='change-pokemon-menu' id='changePokemonMenu'>
                     <img src='./icons/next.png' class='next-icon flip-horizontally' onclick='renderPreviousPokemon()'>
                     <img src='./icons/next.png' class='next-icon' onclick='renderNextPokemon()'>
                 </nav>`;
-            }
+    }
     html += `
             </div>
         </div>`;
