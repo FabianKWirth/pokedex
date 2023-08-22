@@ -22,12 +22,13 @@ async function getStats() {
 
 async function getAbilities(pokemonId) {
     let currentPokemonAbilities = pokemonData[pokemonId]['abilities'];
-    html = `<div class='abilities'><h3>Abilities</h3>
-    <table class='abilities-table'><thead><th>Name</th><th>Description</th></thead>`;
+    html = `<div class='abilities'>
+    <table class='abilities-table'><thead class='sticky-top'><th>Ability</th><th>Description</th></thead>
+    <tbody>`;
     for (let index = 0; index < currentPokemonAbilities.length; index++) {
-        html += await getSingleAbility(currentPokemonAbilities[index])
+        html += await getSingleAbility(currentPokemonAbilities[index]);
     }
-    html += `</table></div>`;
+    html += `<tbody></table></div>`;
     return html;
 }
 

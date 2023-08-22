@@ -39,26 +39,6 @@ function visualizeStats(stats) {
     });
 }
 
-async function getAbilities(pokemonId) {
-    let currentPokemonAbilities = pokemonData[pokemonId]['abilities'];
-    html = `<div class='abilities'><h3>Abilities</h3>
-    <table class='abilities-table'><thead><th>Name</th><th>Description</th></thead>`;
-    for (let index = 0; index < currentPokemonAbilities.length; index++) {
-        html += await getSingleAbility(currentPokemonAbilities[index])
-
-
-    }
-    html += `</table></div>`;
-    return html;
-}
-
-async function getSingleAbility(ability) {
-    let abilityId = ability['ability']['id'];
-    let abilityName = ability['ability']['name'];
-    let abilityDescription = await getAbilityDescription(abilityId);
-    return `<tr><td id='ability'>${abilityName.toUpperCase()}</td><td>${abilityDescription}</td></tr>`;
-}
-
 function emptySearchGrid() {
     document.getElementById('searchResultGrid').innerHTML = "";
 }

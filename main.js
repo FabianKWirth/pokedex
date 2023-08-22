@@ -8,6 +8,7 @@ currentOutputGrid = 'defaultGrid'; //alternativ is searchResultGrid
 async function init() {
     await loadPokemons();
     await renderPokemonGrid();
+    loadAllPokemonNames();
 }
 
 async function increasePokemonPool() {
@@ -60,6 +61,8 @@ async function selectPokemon(index) {
     await renderSelectedPokemon();
     removeScrollOptionForBody();
 }
+
+
 
 function visualizeStats(stats) {
     const ctx = document.getElementById('statGraph');
@@ -241,8 +244,8 @@ async function setPokemonBodyValues() {
             informationContainer.innerHTML += await getAbilities(selectedPokemon);
             break;
         case 'stats':
-            informationContainer.innerHTML += `<div class="chart-container">
-            <canvas id="statGraph" style=></canvas>
+            informationContainer.innerHTML += `<div id='chartContainer' class="chart-container hide">
+            <canvas id="statGraph" ></canvas></div><div id='simpleStatTable' class='hide'>
             </div>`;
             let stats = await getStats();
             visualizeStats(stats);
@@ -263,12 +266,13 @@ async function renderSelectedPokemon() {
     await setPokemonAllValues();
 }
 
+
 async function renderNextPokemon() {
     if (selectedPokemon == null) {
         selectedPokemon = 0;
     }
     selectedPokemon++;
-    if (!pokemonData[selectedPokemon]) {
+    if (!pokemonData[selectedPokemon]['id']) {
         await increasePokemonPool();
     }
     await renderSelectedPokemon();
@@ -284,8 +288,9 @@ async function renderPreviousPokemon() {
 }
 
 async function renderSelectedPokemonLayout() {
+    document.getElementById("selectedPokemon").classList.remove('hide');
     html = `
-        <div id='pokemonElements' class='pokemon-elements animate w-100 overflow-y-scroll position-fixed' onclick='unsetCurrentPokemon()'>
+        <div id='pokemonElements' class='pokemon-elements animate w-100' onclick='unsetCurrentPokemon()'>
             <div id='currentSelectedPokemon' class='current-selected-pokemon'>`+
         await getSelectedPokemonHeaderLayout(selectedPokemon)
         + await getSelectedPokemonBodyLayout();
@@ -317,6 +322,7 @@ function emptySelectedPokemon() {
 }
 
 function unsetCurrentPokemon() {
+    document.getElementById("selectedPokemon").classList.add('hide');
     selectedPokemon = null;
     emptySelectedPokemon();
     addScrollOptionForBody();
@@ -363,7 +369,42 @@ function updateIcon(pokemonId) {
     }
 }
 
-function visualizeStats(stats) {
+async function visualizeStats(stats) {
+    const container = document.getElementById('pokemonInfoContainer');
+    console.log(container.clientWidth);
+    if(container.clientWidth<440){
+        await visualizeStatsSimple(stats);
+        setSimpleStatsVisible();
+    }else{
+        await visualizeStatsAsGraph(stats);
+        setStatsAsGraphVisible();
+    }
+}
+
+function setSimpleStatsVisible(){
+    document.getElementById("simpleStatTable").classList.remove('hide');
+    document.getElementById("chartContainer").classList.add('hide');
+}
+
+function setStatsAsGraphVisible(){
+    document.getElementById("simpleStatTable").classList.add('hide');
+    document.getElementById("chartContainer").classList.remove('hide');
+}
+
+
+function  visualizeStatsSimple(stats){
+    
+    let names=stats[0];
+    let values=stats[1];
+    let html="";
+    for (let index = 0; index < names.length; index++) {
+        html+="<tr><td>"+names[index]+"</td><td>"+values[index]+"</td></tr>";
+    }
+    const table = document.getElementById('simpleStatTable');
+    table.innerHTML="<table class='table table-dark w-100'><thead><th>Stats</th><th>Values</th></thead>"+html+"</table>";
+}
+
+function visualizeStatsAsGraph(stats){
     const ctx = document.getElementById('statGraph');
     const dataSet = getDataSet(stats);
     const config = getRadarChartConfig();

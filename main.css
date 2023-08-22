@@ -52,24 +52,15 @@ h1 {
    
 }
 
-
-.abilities {
-    padding: 8px;
-    margin: 4px;
-}
-
 .icon {
     object-fit: cover;
     height: 48px;
     cursor: pointer;
 }
 
-
-
 .invert {
     filter: invert(1);
 }
-
 
 .flip-horizontally {
     transform: scaleX(-1);
