@@ -104,6 +104,10 @@ h1 {
     animation: spin 1s linear infinite;
 }
 
+.remove-scroll-option{
+    overflow-y: hidden;
+}
+
 
 
 @keyframes spin {

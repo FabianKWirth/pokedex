@@ -58,6 +58,7 @@ async function getSearchInput() {
 async function selectPokemon(index) {
     selectedPokemon = index;
     await renderSelectedPokemon();
+    removeScrollOptionForBody();
 }
 
 function visualizeStats(stats) {
@@ -318,6 +319,7 @@ function emptySelectedPokemon() {
 function unsetCurrentPokemon() {
     selectedPokemon = null;
     emptySelectedPokemon();
+    addScrollOptionForBody();
 }
 
 function removeAnimation(pokemonId) {
@@ -375,6 +377,13 @@ function visualizeStats(stats) {
     });
 }
 
+function removeScrollOptionForBody(){
+    document.getElementById('body').classList.add('remove-scroll-option');
+}
+
+function addScrollOptionForBody(){
+    document.getElementById('body').classList.remove('remove-scroll-option');
+}
 
 
 
